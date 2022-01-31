@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: HaverData Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for HaverData {Haver}"><tr><td>HaverData {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>
+HaverData Object
+</h2>
+
+<h3>Description</h3>
+
+<p>A HaverData object is the default return type of <code><a href="haver_data.html">haver.data</a></code>.
+It contains times series data queried from Haver Analytics databases.
+</p>
+<p>If you have not done so yet, have a look at <code><a href="haver_data.html">haver.data</a></code> before reading this help entry.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'HaverData'
+print(x, data=TRUE)
+## S3 method for class 'HaverData'
+as.matrix(x)
+## S3 method for class 'HaverData'
+as.data.frame(x)
+## S3 method for class 'HaverData'
+as.ts(x)
+
+haver.as.zoo(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>a <code>HaverData</code> object</p>
+</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+<p>a logical <code>TRUE</code> / <code>FALSE</code>.
+If <code>data=FALSE</code>, only summary information on the data set will be printed.
+</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>The <code>print</code> method by default displays time series data as well as some data set properties.
+If you are only interested in the data set properties and if you want to suppress lengthy data output, use option <code>data=FALSE</code>.
+</p>
+<p>If you need to index into the <code>HaverData</code> object, we recommend that you first convert it to a a matrix using <code>as.matrix</code>.
+If you index directly into a <code>HaverData</code> object, the returned object will be a matrix, not a <code>HaverData</code> object.
+</p>
+<p>Indexing replacement operations (<code>"[&lt;-"</code>) are not allowed.
+</p>
+<p><code>as.matrix</code>, <code>as.data.frame</code>, <code>as.ts</code>, and <code>haver.as.zoo</code> are coercion functions.
+Note that the conversion function to <code>zoo</code> objects starts with <code>haver</code>.
+</p>
+<p>The time sequence vector will never have gaps, which implies that missing values of time series are always explicitly shown as NAs.
+</p>
+<p>The metadata for all time series of a <code>HaverData</code> object are stored as a <code>HaverMetaData</code> object within the <code>HaverData</code> object.
+<code><a href="haver_datamd.html">haver.datamd</a></code> returns a copy of this object.
+</p>
+<p>The <code>HaverData</code> object contains information on lists of series codes that have been successfully retrieved and on codes that were dropped from the query.
+You can use <code><a href="haver_codelists.html">haver.codelists</a></code> to extract these code lists.
+</p>
+<p>You can assign aliases to Haver codes of the <code>HaverData</code> object if you prefer to use your own series names in your analysis.
+Use <code><a href="haver_setalias.html">haver.setalias</a></code> to do this.
+</p>
+
+
+<h3>Value</h3>
+
+<p><code>print</code> prints the time series data and returns the <code>HaverData</code> object (invisibly).
+</p>
+<p><code>[.HaverData</code> <em>returns a matrix</em>, not a <code>HaverData</code> object.
+</p>
+<p><code>as.matrix</code>, <code>as.data.frame</code>, <code>as.ts</code>, and <code>haver.as.zoo</code> return the type indicated in the function name.
+</p>
+
+
+<h3>Coercion to Other Types</h3>
+
+<p>The purpose of existence of the <code>HaverData</code> object is to hold data from Haver Analytics databases.
+It is not designed for data analysis.
+With <code>HaverData</code> objects you cannot
+</p>
+
+<ul>
+<li><p> delete time periods
+</p>
+</li>
+<li><p> add/prepend/append time periods
+</p>
+</li>
+<li><p> delete or add time series
+</p>
+</li>
+<li><p> reorder time series
+</p>
+</li>
+<li><p> merge two or more <code>HaverData</code> objects
+</p>
+</li>
+<li><p> plot time series
+</p>
+</li></ul>
+
+<p>For the above operations, you either have to re-run the query using <code>haver.data</code> or you have to coerce the <code>HaverData</code> object to something else and perform the desired operation on that object.
+The <span class="pkg">Haver</span> package offers coercion functions to four other <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> types.
+</p>
+<p>Be aware that when using these coercion functions, the metadata does not get copied into the new objects.
+It is therefore recommended to generate an object <em>in addition</em> to the <code>HaverData</code> object, as in<br />
+<code>&gt; hd   &lt;- haver.data(codes="haverd:fxrwb")</code><br />
+<code>&gt; ex_ts &lt;- as.ts(hd)</code><br />
+instead of just<br />
+<code>&gt; ex_ts &lt;- haver.data(codes="haverd:fxrwb", rtype="ts")</code><br />
+</p>
+<p>With the former approach, the data and metadata that you are using in your analysis are much more tractable.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="Haver_package.html">Haver_package</a></code><br />
+<code><a href="haver_path.html">haver.path</a></code><br />
+<code><a href="haver_data.html">haver.data</a></code><br />
+<code><a href="haver_metadata.html">haver.metadata</a></code><br />
+<code><a href="HaverMetaData.html">HaverMetaData</a></code><br />
+<code><a href="HaverErrorReport.html">HaverErrorReport</a></code><br />
+<code><a href="haver_codelists.html">haver.codelists</a></code><br />
+<code><a href="haver_datamd.html">haver.datamd</a></code><br />
+<code><a href="haver_setalias.html">haver.setalias</a></code><br />
+<code><a href="haver_limits.html">haver.limits</a></code><br />
+<code><a href="Haver_advanced.html">Haver_advanced</a></code><br />
+<code><a href="Haver_legacy.html">Haver_legacy</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+haver.path()
+haver.path("examples")
+
+## In the 'Examples' section of 'haver.data' we saw instances where series were
+## dropped because temporal aggregation or disaggregation could not be performed:
+hmd_mqa &lt;- haver.metadata(database="havermqa")
+hd_mqa1 &lt;- haver.data(hmd_mqa)
+hd_mqa2 &lt;- haver.data(codes=hmd_mqa, freq="q")
+
+## To determine which codes have been successfully queried and which ones
+## got dropped, you can use the 'haver.codelists' function:
+haver.codelists(hd_mqa1)
+haver.codelists(hd_mqa2)
+
+## Both 'hd_mqa1' and 'hd_mqa2' contain a lot of data so their contents is
+## better looked at using 'View' rather than 'print'.
+## If you want to just print summary information on the data set but
+## suppress the display of time series data points, use the 'data' argument:
+print(hd_mqa1, data=FALSE)
+print(hd_mqa2, data=FALSE)
+
+## If you need to index into the 'HaverData' object, it is safer to convert it
+## to a matrix first:
+ex_mat  &lt;- as.matrix(hd_mqa1)
+ex_mat2 &lt;- ex_mat[67:77, c("c","cd")]
+ex_mat2
+
+haver.path("restore")
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>

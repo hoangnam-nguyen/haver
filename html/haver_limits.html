@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Set and Get Limits for Haver Analytics Data Queries</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for haver.limits {Haver}"><tr><td>haver.limits {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>
+Set and Get Limits for Haver Analytics Data Queries
+</h2>
+
+<h3>Description</h3>
+
+<p><code>haver.limits</code> handles the settings with regards to the limits of data queries of <code><a href="haver_data.html">haver.data</a></code>.
+Note that these limits have no impact on the metadata queries of <code><a href="haver_metadata.html">haver.metadata</a></code>.
+</p>
+<p>Limits on the size of queries are imposed to protect you from unintentionally conducting very large queries that are problematic in terms of execution time or memory consumption.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+haver.limits()
+haver.limits(what)
+haver.limits(what, value)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>what</code></td>
+<td>
+
+<p>a character string. One of &lsquo;numcodes&rsquo;, &lsquo;numdatapoints&rsquo;, and &lsquo;default&rsquo;.
+<code>what="numcodes"</code> sets the maximum allowed number of codes in a query to <code>value</code>.
+<code>what="numdatapoints"</code> sets the maximum allowed number of data points in a query to <code>value</code>.
+<code>what="default"</code> ignores the value of <code>value</code>, if supplied, and restores default values for &lsquo;numcodes&rsquo; and &lsquo;numdatapoints&rsquo;, which are 5000 and 15000000 (15 million), respectively.
+</p>
+</td></tr>
+<tr valign="top"><td><code>value</code></td>
+<td>
+
+<p>a numeric non-negative scalar, specifying the limit for the &lsquo;numcodes&rsquo; or &lsquo;numdatapoints&rsquo; setting.
+</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>The values set by <code>haver.limits</code> are taken into account by <code>haver.data</code>.
+It will issue an error if a query is beyond what is allowed by query limits, unless you specify its option <code>limits=FALSE</code>.
+</p>
+<p><code>haver.limits()</code>, with an empty argument list, does nothing besides returning the current settings.
+</p>
+<p><code>haver.limits("default")</code> restores <span class="pkg">Haver</span> default values.
+</p>
+<p>Any values set by <code>haver.limits</code> will remain in effect until the package gets detached from the <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> search path, or until <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> is restarted.
+Restarting <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> or re-loading the <span class="pkg">Haver</span> package will result in the restoration of default values.
+</p>
+<p>The default values for query limits allow you to conduct queries which are fairly sizeable.
+The default for the maximum number of codes is 5000.
+The default for the maximum number of data points is 15 million, which is a little bit more than a daily data set with 1000 time series, covering 50 years of data.
+Such a data set requires more than 100 megabyte of memory, but the memory necessary for performing the retrieval is several times as high.
+Before you increase values for limits, make sure these are tenable for your system.
+</p>
+
+
+<h3>Value</h3>
+
+<p>A list with named elements &lsquo;numcodes&rsquo; and &lsquo;numdatapoints&rsquo;, containing numeric scalars, indicating the current settings of query limits.
+</p>
+
+
+<h3>Query Speed and Memory consumption</h3>
+
+<p>Large data queries can become problematic with respect to execution time and memory consumption.
+Whether this is the case depends on the limits of your machine, and it may also depend the speed of your institution's network.
+The following paragraphs provide recommendations for managing speed and memory issues, in general terms.
+</p>
+
+
+<h4>Query Execution Time</h4>
+
+<p>Should a query take too long, you can interrupt execution as with other <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> commands.
+Still, after an interrupted query the memory claimed by <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> is likely to be larger than before the query.
+The <code><a href="../../base/html/gc.html">gc</a></code> command can help to free some or all of the memory up again.
+</p>
+
+
+
+<h4>Memory Consumption</h4>
+
+<p>When specifying large queries, assessing a tenable level of memory consumption by <code>haver.data</code> should not be geared towards the total free memory on your computer, for the following reason:
+</p>
+
+<ul>
+<li><p> The memory consumed by data query operations is likely to be a multiple of the memory consumed by the <code>HaverData</code> object returned.
+</p>
+</li>
+<li><p> Commands issued after the query may also consume a large amount of memory.
+For example, if you follow the recommendation in section &lsquo;Coercion to Other Types&rsquo; in <code><a href="HaverData.html">HaverData</a></code> to create an object for data analysis in addition to the <code>HaverData</code> object, you are requesting the amount of memory consumed by the Haver data set for a second object.
+As another example, <code><a href="haver_setalias.html">haver.setalias</a></code> requires a copy operation of an entire <code>HaverData</code> object.
+</p>
+</li></ul>
+
+<p>On 32-bit systems, memory limits may pose more stringent restrictions on your queries than on 64-bit systems.
+See <code><a href="../../base/html/Memory-limits.html">Memory-limits</a></code>.
+</p>
+<p>Should a data query consume a lot of memory, there is a good change that you can reclaim some or all of it by using the <code><a href="../../base/html/gc.html">gc</a></code> command.
+</p>
+
+
+
+<h3>See Also</h3>
+
+<p><code><a href="Haver_package.html">Haver_package</a></code><br />
+<code><a href="haver_path.html">haver.path</a></code><br />
+<code><a href="haver_data.html">haver.data</a></code><br />
+<code><a href="haver_metadata.html">haver.metadata</a></code><br />
+<code><a href="HaverData.html">HaverData</a></code><br />
+<code><a href="HaverMetaData.html">HaverMetaData</a></code><br />
+<code><a href="HaverErrorReport.html">HaverErrorReport</a></code><br />
+<code><a href="haver_codelists.html">haver.codelists</a></code><br />
+<code><a href="haver_datamd.html">haver.datamd</a></code><br />
+<code><a href="haver_setalias.html">haver.setalias</a></code><br />
+<code><a href="Haver_advanced.html">Haver_advanced</a></code><br />
+<code><a href="Haver_legacy.html">Haver_legacy</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+haver.path()
+haver.path("examples")
+
+## haver.limits() returns a list with the current settings for limits. We use
+## it here to record these settings in order to be able to restore them later.
+ex_storedlimits &lt;- haver.limits()
+
+## We reset the limit on the maximum number of codes allowed in a query:
+haver.limits(what="numcodes", value=10)
+
+## 'HAVERW' has 21 codes. The limit we just set does not affect
+## metadata retrievals:
+hmd &lt;- haver.metadata(dat="haverw")
+
+## Querying the data for 21 codes is not possible with the example settings
+## for limits. The following generates an error:
+## Not run: 
+hd &lt;- haver.data(codes=hmd)
+
+## End(Not run)
+
+## A query for 10 codes still works:
+hd &lt;- haver.data(codes=hmd[1:10])
+
+## We can also explicitly state that 'haver.data' should ignore limits:
+hd &lt;- haver.data(codes=hmd, limits=FALSE)
+
+## With default values, the full 21 code query goes through of course:
+haver.limits(what="default")
+hd &lt;- haver.data(codes=hmd)
+
+## We restore the limits that were in place before the above examples
+## were executed:
+haver.limits(what="numcodes"      , value=ex_storedlimits[["numcodes"]])
+haver.limits(what="numdatapoints" , value=ex_storedlimits[["numdatapoints"]])
+
+
+haver.path("restore")
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>

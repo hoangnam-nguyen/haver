@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Get Time Series from a Haver Database (legacy function / help...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for dlxGetData {Haver}"><tr><td>dlxGetData {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Get Time Series from a Haver Database (legacy function / help entry)</h2>
+
+<h3>Description</h3>
+
+<p>Get one or more time series, convert them to the same frequency, and 
+store them in a zoo object. Frequency aggregation is currently supported,
+but not disaggregation.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+dlxGetData(varnames, database, start, end, frequency, .colnames)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>varnames</code></td>
+<td>
+
+<p>A vector of Haver variable names. You can either give just the variable 
+name, or a combination of the database name and variable name in the 
+format<br />
+&quot;DATABASE:VARIABLE&quot;. If a database is not given, then the series 
+will be assumed to reside in the database given in the function's 
+database argument.
+</p>
+</td></tr>
+<tr valign="top"><td><code>database</code></td>
+<td>
+
+<p>A Haver database name (with no filename extension). Each variable name 
+that does not explictly contain a database name will be assumed to 
+reside in this database. 
+</p>
+</td></tr>
+<tr valign="top"><td><code>start</code></td>
+<td>
+
+<p>Optional starting date for the time series window, defined using either 
+a Date object or something that can be coerced to a Date (such as a 
+string, POSIXct, or chron object). Leave blank to start at the latest 
+date that still captures all the series. If the provided starting date 
+is earlier than the first value of any of the series in your query, than 
+the zoo object will be padded with blank values. 
+</p>
+</td></tr>
+<tr valign="top"><td><code>end</code></td>
+<td>
+
+<p>Optional ending date for the time series window. defined using either a 
+Date object or something that can be coerced to a Date (such as a 
+string, POSIXct, or chron object). Leave blank to end at the earliest 
+date which still captures all the series. If the provided ending date is 
+later than the last value of any of the series in your query, than the 
+zoo object will be padded with blank values. 
+</p>
+</td></tr>
+<tr valign="top"><td><code>frequency</code></td>
+<td>
+
+<p>Optional frequency that the time series should be converted to, IF 
+POSSIBLE. Options are &quot;d&quot;, &quot;wmon&quot;, &quot;wtue&quot;, &quot;wwed&quot;, &quot;wthu&quot;, &quot;wfri&quot;, 
+&quot;wsat&quot;, &quot;wsun&quot;, &quot;m&quot;, &quot;q&quot;, &quot;a&quot;. If left blank, all series are converted 
+to the frequency of the lowest-frequency series listed in varnames. For 
+instance, if you pass in the names of monthly and quarterly series then 
+the resulting block will come back as quarterly. 
+</p>
+<p>The frequency option will have no effect if you specify a frequency that 
+is higher than the lowest frequency series in your list of variables. 
+For example, if you request a monthly and quarterly series and ask for 
+monthly frequency then you will still get data in a quarterly frequency. 
+On the other hand, if you asked for annual data, the resulting data 
+would in fact be annual. 
+</p>
+</td></tr>
+<tr valign="top"><td><code>.colnames</code></td>
+<td>
+
+<p>Optional vector of column names to be used for the zoo object. Length 
+must be equal to varnames. If no values are given, the zoo object will 
+use lowercase Haver variable names. 
+</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>A zoo object indexed by Date objects. The Date objects are set to the last
+day in each period.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+## Load Haver library
+library(Haver)
+
+## Set the location of your Haver databases.
+dlxSetDbPath("C:/DLX/data/")
+
+## Get the series LANAGRA and GDP from database USECON.
+dlxGetData(c("lanagra", "gdp"), "usecon")
+
+## Get the series LANAGRA and GDP from database USECON and
+## FFED from database WEEKLY
+dlxGetData(c("lanagra", "gdp", "weekly:ffed"), "usecon")
+
+## Get the series LANAGRA from database USECON in the date range
+## 2000:1 to 2010:12
+dlxGetData("lanagra", "usecon", start="2000-01-01", end="2010-12-31")
+
+## Get the series LANAGRA from database USECON, convert to quarterly
+## frequency, and get data in the range 2000:1 to 2010:4
+dlxGetData("lanagra", "usecon", start="2000-01-01", end="2010-12-31", 
+  frequency="q")
+
+## End(Not run)
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>

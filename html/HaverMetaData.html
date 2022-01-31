@@ -1,0 +1,373 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: HaverMetaData Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for HaverMetaData {Haver}"><tr><td>HaverMetaData {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>
+HaverMetaData Object
+</h2>
+
+<h3>Description</h3>
+
+<p>A <code>HaverMetaData</code> object is the return type of <code><a href="haver_metadata.html">haver.metadata</a></code>.
+</p>
+<p>A second use of <code>HaverMetaData</code> objects is to use them as input for <code><a href="haver_data.html">haver.data</a></code> (see <a href="Haver_advanced.html">Haver_advanced</a>).
+</p>
+<p>If you have not done so yet, have a look at <code><a href="haver_metadata.html">haver.metadata</a></code> before reading this help entry.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'HaverMetaData'
+print(x, fields.disp = DEFAULT_FIELDS, desc.length = 30)
+## S3 method for class 'HaverMetaData'
+dim(x)
+## S3 method for class 'HaverMetaData'
+x[i]
+## S3 method for class 'HaverMetaData'
+x[[j]]
+## S3 method for class 'HaverMetaData'
+as.data.frame(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>a <code>HaverMetaData</code> object</p>
+</td></tr>
+<tr valign="top"><td><code>fields.disp</code></td>
+<td>
+
+<p>a character vector whose elements specify metadata fields to display.
+For a list of metadata fields and a description of their contents, see section &lsquo;Metadata Fields&rsquo; below.
+In the syntax list above, <code>DEFAULT_FIELDS</code> stands for<br />
+<code>c("database", "code", "startdate",</code><br />
+<code>  "enddate", "frequency", "numobs", "descriptor")</code><br />
+Use <code>fields.disp=NA</code> to display all fields.
+Use <code>fields.disp=NULL</code> or <code>fields.disp=""</code> to only display summary information on the data set and to suppress printing of individual records.
+</p>
+</td></tr>
+<tr valign="top"><td><code>desc.length</code></td>
+<td>
+<p>a numeric scalar in the range 2-80.
+You can also use <code>desc.length=NA</code> to set it to the maximum allowed length of 80.</p>
+</td></tr>
+<tr valign="top"><td><code>i</code></td>
+<td>
+<p>a numeric or a logical index vector.
+If logical, the vector is subject to <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span>'s vector recycling rule.</p>
+</td></tr>
+<tr valign="top"><td><code>j</code></td>
+<td>
+<p>a numeric scalar or string.
+If numeric, it must be in the range 1 to 18.
+If string, it must be a valid <code>HaverMetaData</code> field.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p><code>print</code> is an alternative to <code><a href="../../utils/html/View.html">View</a></code>.
+Using <code>print</code> you can print metadata information or a subset thereof to the <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> output window.
+The print method takes two arguments in addition to the object to be printed.
+The first one specifies the field list to be printed (see the field list table below).
+The second one specifies how many characters of the series descriptors should be printed if this field is among the fields to be displayed.
+Haver metadata field names can be abbreviated, as long as the abbreviation uniquely implies a metadata field name.
+Note that such abbreviations are not allowed in <code>[[</code> indexing operations.
+See section &lsquo;Examples&rsquo; below for illustrations.
+</p>
+<p>A quick way to determine how many code records are contained within a <code>HaverMetaData</code> object is<br />
+<code>dim(hmd)[1]</code>
+</p>
+<p>Single bracket <code>"["</code> indexing is restricted to row operations and therefore takes only one argument.
+Indexing operations allowed are very similar to the ones allowed by <code><a href="../../base/html/Extract.data.frame.html">[.data.frame</a></code>.
+One difference is that <code>HaverMetaData</code> indexing may be done with or without a trailing &lsquo;comma&rsquo;:<br />
+<code>&gt; hmd[1:3, ]</code><br />
+<code>&gt; hmd[1:3]</code><br />
+mean the same thing.
+With <code>data.frame</code>s,<br />
+<code>&gt; df[1:3, ]</code><br />
+<code>&gt; df[1:3]</code><br />
+are different operations.
+The row operations that we are considering correspond to the first statement on <code>data.frame</code>s.
+</p>
+<p>Single bracket indexing using character index vectors is not allowed for <code>HaverMetaData</code> objects.
+If an indexing operation removes all rows, <code>NULL</code> is returned.
+If an indexing operation results in rows that contain <code>NA</code>s (e.g. by out-of-bounds indexes) an error is issued.
+</p>
+<p>Double bracket <code>"[["</code> indexing is restricted to column operations.
+</p>
+<p>Indexing replacement operations (<code>"[&lt;-"</code> and <code>"[[&lt;-"</code>) are not allowed.
+</p>
+<p>A <code>HaverMetaData</code> object can be coerced into a <code>data.frame</code>.
+This is useful when you want to perform more elaborate indexing operations on the metadata than allowed by the <code>HaverMetaData</code> object.
+In addition, you have to coerce to <code>data.frame</code>s if you want to append the contents of two or more <code>HaverMetaData</code> objects (see <code><a href="../../base/html/cbind.html">rbind</a></code>).
+Note that you can use the resulting <code>data.frame</code> as an input to <code><a href="haver_data.html">haver.data</a></code> (an illustration of this is contained in the &lsquo;Examples&rsquo; section of the <code>haver.data</code> help entry).
+</p>
+<p>You can assign aliases to Haver codes of the <code>HaverMetaData</code> object if you prefer to use your own series names in your analysis.
+Use <code><a href="haver_setalias.html">haver.setalias</a></code> to do this.
+</p>
+
+
+<h3>Value</h3>
+
+<p><code>print</code> prints the metadata and returns the <code>HaverMetaData</code> object (invisibly).
+</p>
+<p><code>dim</code> returns a numeric vector with two elements indicating the number of code records and the number of metadata fields.
+The latter is a fixed number for all <code>HaverMetaData</code> objects.
+</p>
+<p><code>[.HaverMetaData</code> returns a <code>HaverMetaData</code> object or <code>NULL</code>.
+</p>
+<p><code>[[.HaverMetaData</code> returns a vector whose type is either character, numeric, Date, or POSIXct.
+</p>
+<p><code>as.data.frame</code> returns a <code>data.frame</code>.
+</p>
+
+
+<h3>Metadata Fields</h3>
+
+<p>A HaverMetaData object contains 18 pieces of information for each series code.
+These pieces of information are referred to as &lsquo;fields&rsquo; in the following.
+</p>
+<p>Side note: In the Haver Analytics data browser &lsquo;DLXVG3&rsquo;, a subset of these fields is called &lsquo;series parameters&rsquo; and can be accessed from the &lsquo;Tools&rsquo; menu or through the &lsquo;Alt+F10&rsquo; keyboard shortcut.
+</p>
+
+<table summary="Rd table">
+<tr>
+ <td style="text-align: left;">
+<b>field name</b> </td><td style="text-align: left;"> <b>type/class</b> </td><td style="text-align: left;"> <b>description</b> </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+database          </td><td style="text-align: left;">  character    </td><td style="text-align: left;"> the database name (excluding the path to the database)                </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+code              </td><td style="text-align: left;">  character    </td><td style="text-align: left;"> the Haver series code                                                 </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+alias             </td><td style="text-align: left;">  character    </td><td style="text-align: left;"> a user-defined series code                                            </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+startdate         </td><td style="text-align: left;">  Date         </td><td style="text-align: left;"> an <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> Date object corresponding to the                                </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                  </td><td style="text-align: left;">               </td><td style="text-align: left;"> last day of the series starting period                                </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+enddate           </td><td style="text-align: left;">  Date         </td><td style="text-align: left;"> an <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> Date object corresponding to the                                </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                  </td><td style="text-align: left;">               </td><td style="text-align: left;"> last day of the series ending period                                  </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+numobs            </td><td style="text-align: left;">  numeric      </td><td style="text-align: left;"> number of periods between (and including) startdate and enddate       </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+frequency         </td><td style="text-align: left;">  char/numeric </td><td style="text-align: left;"> the frequency code; one of D, W, M, Q, A                              </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                  </td><td style="text-align: left;">               </td><td style="text-align: left;"> (daily, weekly, monthly, quarterly, annual)                           </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+datetimemod       </td><td style="text-align: left;">  POSIXct      </td><td style="text-align: left;"> a POSIXct object indicating the time the series was last modified     </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+magnitude         </td><td style="text-align: left;">  numeric      </td><td style="text-align: left;"> the magnitude of the series                                           </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                  </td><td style="text-align: left;">               </td><td style="text-align: left;"> (e.g. 3 for series expressed in thousands)                            </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+decprecision      </td><td style="text-align: left;">  numeric      </td><td style="text-align: left;"> the decimal precision (number of digits after the decimal point)      </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+diftype           </td><td style="text-align: left;">  numeric      </td><td style="text-align: left;"> 0/1 value: 1 if data can contain or contain                           </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                  </td><td style="text-align: left;">               </td><td style="text-align: left;"> non-positive values, 0 otherwise                                      </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+aggtype           </td><td style="text-align: left;">  char/numeric </td><td style="text-align: left;"> the aggregation type; one of AVG, SUM, EOP, UDF, NST                  </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                  </td><td style="text-align: left;">               </td><td style="text-align: left;"> (average, sum, end-of-period, undefined, not set)                     </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+datatype          </td><td style="text-align: left;">  character    </td><td style="text-align: left;"> one of US$, LocCur, US$/LC, LC/US$, INDEX, Units                      </td>
+</tr>
+<tr>
+ <td style="text-align: left;"> 
+                  </td><td style="text-align: left;">               </td><td style="text-align: left;"> (where LocCur and LC stand for local currency)                        </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+geography1        </td><td style="text-align: left;">  character    </td><td style="text-align: left;"> primary Haver geography code                                          </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+geography2        </td><td style="text-align: left;">  character    </td><td style="text-align: left;"> secondary Haver geography code                                        </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+descriptor        </td><td style="text-align: left;">  character    </td><td style="text-align: left;"> the series description (label)                                        </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+shortsource       </td><td style="text-align: left;">  character    </td><td style="text-align: left;"> the abbreviated name of the time series publisher                     </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+longsource        </td><td style="text-align: left;">  character    </td><td style="text-align: left;"> the full name of the time series publisher                            
+</td>
+</tr>
+
+</table>
+
+<p>When the <code>HaverMetaData</code> object is returned by <code>haver.metadata</code>, field &lsquo;alias&rsquo; does not contain any entries since it is not part of the metadata provided by Haver Analytics.
+Rather, this field allocates space for storing user-defined series code names (aliases).
+For details, see <code><a href="haver_setalias.html">haver.setalias</a></code>.
+</p>
+<p>Field &lsquo;aggtype&rsquo; controls the temporal aggregation arithmetics for a particular series.
+<code><a href="haver_data.html">haver.data</a></code> performs temporal aggregation according to the values of this field.
+In some DLX software components it is possible to apply a custom setting to the aggregation type for a particular series.
+Within <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span>, however, this functionality does not exist.
+Temporal aggregation is always performed according to the &lsquo;aggtype&rsquo; field entry of a series.
+</p>
+<p>Field &lsquo;diftype&rsquo; is of limited interest since it is used internally in DLX software only.
+It controls the kinds of series transformations that are allowed for a particular series.
+</p>
+<p>Internally, some fields are stored in an encoded format, i.e. as a numeric value.
+Changing the default behavior of <code><a href="haver_metadata.html">haver.metadata</a></code> by setting argument <code>decode=FALSE</code> will store numeric values in the returned <code>HaverMetaData</code> object.
+In rare cases, it may be useful to access the numeric values.
+The list of encodings is:
+</p>
+
+<table summary="Rd table">
+<tr>
+ <td style="text-align: left;">
+<b>field name</b> </td><td style="text-align: left;"> <b>endoding</b> </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+frequency         </td><td style="text-align: left;"> 10=annual, 30=quarterly, 40=monthly, 51=weekly Monday ... 57=weekly Sunday, 60=daily </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+aggtype           </td><td style="text-align: left;"> 1=AVG, 2=SUM, 3=EOP, 9=UDF, 0=NST           
+</td>
+</tr>
+
+</table>
+
+
+
+<h3>See Also</h3>
+
+<p><code><a href="Haver_package.html">Haver_package</a></code><br />
+<code><a href="haver_path.html">haver.path</a></code><br />
+<code><a href="haver_data.html">haver.data</a></code><br />
+<code><a href="haver_metadata.html">haver.metadata</a></code><br />
+<code><a href="HaverData.html">HaverData</a></code><br />
+<code><a href="HaverErrorReport.html">HaverErrorReport</a></code><br />
+<code><a href="haver_codelists.html">haver.codelists</a></code><br />
+<code><a href="haver_datamd.html">haver.datamd</a></code><br />
+<code><a href="haver_setalias.html">haver.setalias</a></code><br />
+<code><a href="haver_limits.html">haver.limits</a></code><br />
+<code><a href="Haver_advanced.html">Haver_advanced</a></code><br />
+<code><a href="Haver_legacy.html">Haver_legacy</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+haver.path()
+haver.path("examples")
+
+## We start out by pulling in all metadata for 'HAVERMQA'
+## and looking at it in the viewer
+hmd_mqa &lt;- haver.metadata(dat="havermqa")
+
+## Not run: 
+View(hmd_mqa)
+
+## End(Not run)
+
+## There are monthly series between rows 75 and 101 which
+## we choose to assign to another HaverMetaData object using row-indexing.
+## Note that only one index vector is supplied. It refers to rows.
+hmd_2 &lt;- hmd_mqa[75:101]
+
+## Double bracket indexing refers to columns.
+## Let's do a frequency count:
+table(hmd_mqa[["frequency"]])
+
+## More complex subsetting operations have to be done after converting
+## to a data.frame.
+ex_df_mqa &lt;- as.data.frame(hmd_mqa)
+
+## We are interested in the monthly exchange rate series starting at
+## row 79 of 'hmd_mqa'. Let's build a subset of codes that start with 'fx...'.
+## We utilize regular expression functions (see the help entry for 'grep')
+hmd_3 &lt;- hmd_mqa[grep("fx.*", hmd_mqa[["code"]])]
+
+## Before we can use these series for analysis we must determine
+## whether they are quoted in an unambiguous way (units of domestic currency
+## per units of foreign currency, or vice versa).
+## The 'datatype' metadata field can help in this.
+table(hmd_3[["datatype"]])
+
+## We see that the rates are not quoted uniformly, so we must 
+## do adjustments after pulling in the data and before doing analyis.
+
+## Let's say that we need exchange rate data going back to 1970.
+## We can immediately determine which series fail this criterion:
+hmd_4 &lt;- hmd_3[ hmd_3[["startdate"]] &gt; as.Date("1970-12-31", format="%Y-%m-%d") ]
+print(hmd_4, fields=c("code","start","desc"), desc.len=70)
+
+## Note that we were able to abbreviate metadata fields names in the above statement.
+## This is only possible for the 'print' method, but not for indexing.
+
+## We invert the above filtering criterion to get the series that have the desired
+## coverage. Then we feed the returned object as 'codes' argument into 'haver.data':
+hmd_5 &lt;- hmd_3[ hmd_3[["startdate"]] &lt;= as.Date("1970-12-31", format="%Y-%m-%d") ]
+hd_5  &lt;- haver.data(codes=hmd_5)
+
+## If we want to investigate several full databases, the best way
+## is to 'rbind' data.frames:
+ex_df_d &lt;- as.data.frame(haver.metadata(dat="haverD"))
+
+ex_df_full &lt;- rbind(ex_df_mqa, ex_df_d)
+table(ex_df_full[["database"]], ex_df_full[["frequency"]])
+
+haver.path("restore")
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>

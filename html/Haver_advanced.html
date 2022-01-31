@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Advanced Features and Usage of the 'Haver' Package</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for Haver_advanced {Haver}"><tr><td>Haver_advanced {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>
+Advanced Features and Usage of the <span class="pkg">Haver</span> Package
+</h2>
+
+<h3>Description</h3>
+
+<p>This help page provides a realistic and complete work-through example of a real-world data query task, touching upon some advanced concepts of usage.
+In particular, the following topics are illustrated:
+</p>
+
+<ul>
+<li><p> finding appropriate time series
+</p>
+</li>
+<li><p> renaming of series codes
+</p>
+</li>
+<li><p> using <code><a href="haver_metadata.html">haver.metadata</a></code> to determine necessary series transformations
+</p>
+</li>
+<li><p> conversion to non-<span class="pkg">Haver</span> objects for data analysis
+</p>
+</li></ul>
+
+
+
+<h3>An Example Query Task</h3>
+
+<p>Let's assume that our task is to perform analysis using the following series:
+</p>
+
+<ul>
+<li><p> US real GDP
+</p>
+</li>
+<li><p> a US interest rate
+</p>
+</li>
+<li><p> real US exports and real US imports of goods and services
+</p>
+</li>
+<li><p> US exchange rates with Canada, the EU, Japan, Switzerland, and the UK
+</p>
+</li></ul>
+
+<p>We would like to have quarterly data back to 1970.
+</p>
+<p>In the &lsquo;Examples&rsquo; section below, we will use the <span class="pkg">Haver</span> <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> package to search Haver databases for series.
+Please do not forget that Haver's DLXVG3 data browser has powerful search capabilities.
+However, once you are familiar with the workings of the <span class="pkg">Haver</span> package, its functions may serve as a complement to the tools in DLXVG3 for searching for series.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Haver Analytics &lt;tech@haver.com&gt;
+</p>
+<p>Maintainer: Haver Analytics &lt;tech@haver.com&gt;
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="Haver_package.html">Haver_package</a></code><br />
+<code><a href="haver_path.html">haver.path</a></code><br />
+<code><a href="haver_data.html">haver.data</a></code><br />
+<code><a href="haver_metadata.html">haver.metadata</a></code><br />
+<code><a href="HaverData.html">HaverData</a></code><br />
+<code><a href="HaverMetaData.html">HaverMetaData</a></code><br />
+<code><a href="HaverErrorReport.html">HaverErrorReport</a></code><br />
+<code><a href="haver_codelists.html">haver.codelists</a></code><br />
+<code><a href="haver_datamd.html">haver.datamd</a></code><br />
+<code><a href="haver_setalias.html">haver.setalias</a></code><br />
+<code><a href="haver_limits.html">haver.limits</a></code><br />
+<code><a href="Haver_legacy.html">Haver_legacy</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+haver.path()
+haver.path("examples")
+
+## In this example section, we focus on the database 'HAVERMQA'.
+hmd_mqa &lt;- haver.metadata(dat="havermqa")
+
+## We have the presumption that our databases include series on US GDP whose
+## codes contain the string 'gdp'. We look for regular expression matches
+## in the 'code' field of the metadata:
+hmd_mqa[grep(".*gdp.*", hmd_mqa[["code"]]), ]
+
+## We can see that US real GDP has series code 'gdph'.
+## In order to find interest rates and exports series we apply regular
+## expressions again, this time to the 'descriptor' metadata field:
+hmd_mqa[ grep(".*Treasury.*", hmd_mqa[["descriptor"]]), ]
+hmd_mqa[ grep(".*Export.*"  , hmd_mqa[["descriptor"]]), ]
+
+## To view the full descriptors, you can use 'View'. Here we use 'print':
+print( hmd_mqa[ grep(".*Treasury.*", hmd_mqa[["descriptor"]]), ]
+       , fields=c("code", "descriptor"), desc.len=80)
+print( hmd_mqa[ grep(".*Export.*"  , hmd_mqa[["descriptor"]]), ]
+       , fields=c("code", "descriptor"), desc.len=80)
+
+## We opt for series 'fcm1' and 'xh'. We briefly confirm that the
+## imports series has an analogous code to the exports series:
+hmd_mqa[hmd_mqa[["code"]]=="mh"]
+
+## For exchange rates, we again apply prior knowledge that 'HAVERMQA'
+## contains many exchange rates series whose codes start with 'fx...':
+hmd_mqa[grep(".*fx.*", hmd_mqa[["code"]]), ]
+
+## We pick the series 'fxcan', 'fxeur', 'fxjap', 'fxsw', 'fxuk'
+
+## We have now determined the 9 series codes for our analysis:
+## 'gdph', 'fcm1', 'xh', 'mh', 'fxcan', 'fxeur', 'fxjap', 'fxsw', 'fxuk'
+## so we can retrieve the data:
+ex_codes &lt;- c("gdph", "fcm1", "xh", "mh", "fxcan",
+              "fxeur", "fxjap", "fxsw", "fxuk")
+hd_adv  &lt;- haver.data(codes=ex_codes, database="havermqa")
+hmd_adv &lt;- haver.datamd(hd_adv)
+print(hmd_adv, fields=c("code", "startdate", "descriptor"), desc.length=NA)
+
+## We note that series fxeur starts only in 1999 but keep it in the data set anyway.
+## From the labels, we can see that the national accounts series do have the same
+## magnitude (billions of chained dollars). If this had not been the case, we would
+## have had to harmonize the magnitudes manually.
+## We also see that exchange rates are not quoted uniformly. We opt to express
+## all exchange rates in units of foreign currency per US dollar. We note that
+## later we will have to invert series 'fxeur' and 'fxuk'.
+## We use the metadata to confirm our conclusions:
+print(hmd_adv, fields=c("code", "magnitude", "datatype"))
+
+## As another preliminary QA check, we plot the raw data
+## using a coercion function:
+plot(as.ts(hd_adv))
+
+## At this point we would like to assign series aliases that are more
+## convenient to work with, possibly because these are standard codes in our
+## own work flow or in the institution we work for:
+ex_codes   &lt;- c("gdph", "fcm1", "xh", "mh")
+ex_aliases &lt;- c("yr"  , "i"   , "xr", "mr")
+hd_adv     &lt;- haver.setalias(hd_adv, ex_codes, ex_aliases)
+
+## You will notice that the series in question have been renamed:
+## Not run: 
+View(hd_adv)
+
+## End(Not run)
+
+## This information has also been recorded in the metadata:
+hmd_adv &lt;- haver.datamd(hd_adv)
+print(hmd_adv, fields=c("code", "alias", "descriptor"), desc.len=NA)
+
+## In order to start data analysis, we convert our HaverData object to an R 'ts'
+## object. The series aliases that we have assigned will be carried forward.
+## Our custom series names are the only difference with respect to the
+## previous plot:
+ex_ts &lt;- as.ts(hd_adv)
+plot(ex_ts)
+
+## In the following, we apply a few functions that are outside the Haver package
+## in order to illustrate that data analysis is done elsewhere.
+## In particular, we cut off part of the sample, invert some exchange rate series,
+## generate log-differences and first differences, plot the series, 
+## and look at summary statistics.
+
+ex_ts                      &lt;- window(ex_ts, start=c(1974,1))
+ex_ts[,c("fxeur", "fxuk")] &lt;- 1 / ex_ts[,c("fxeur", "fxuk")]
+ex_lognames                &lt;- c("yr", "xr", "mr", "fxcan",
+                                "fxeur", "fxjap", "fxsw", "fxuk")
+ex_ts[,ex_lognames]        &lt;- log(ex_ts[,ex_lognames])
+ex_ts                      &lt;- diff(ex_ts)
+plot(ex_ts)
+summary(ex_ts)
+
+haver.path("restore")
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>

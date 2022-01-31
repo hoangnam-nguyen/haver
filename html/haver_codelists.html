@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Extract Lists of Haver Series Codes</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for haver.codelists {Haver}"><tr><td>haver.codelists {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>
+Extract Lists of Haver Series Codes
+</h2>
+
+<h3>Description</h3>
+
+<p><code>haver.codelists</code> extracts lists of Haver series codes from <span class="pkg">Haver</span> objects of type <code><a href="HaverMetaData.html">HaverMetaData</a></code>, <code><a href="HaverData.html">HaverData</a></code>, and <code><a href="HaverErrorReport.html">HaverErrorReport</a></code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+haver.codelists(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>an object of type <code>HaverMetaData</code>, <code>HaverData</code>, or <code>HaverErrorReport</code></p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>The objects of the <span class="pkg">Haver</span> package contain information on various Haver series code lists.
+For the most part, this information is related to the section &lsquo;When Data Cannot Be Retrieved&rsquo; of <code><a href="haver_data.html">haver.data</a></code>.
+<code>haver.codelists</code> accesses this information.
+</p>
+
+
+<h3>Value</h3>
+
+<p><code>haver.codelists</code> always returns a list whose elements are character vectors, possibly of length zero.
+In turn, the elements of the character vectors are Haver codes in <em>database:seriescode</em> format.
+The returned lists have the following named elements:
+</p>
+
+<table summary="Rd table">
+<tr>
+ <td style="text-align: left;">
+<b>argument type</b>    </td><td style="text-align: left;"> <b>element name</b> </td><td style="text-align: left;"> <b>vector contents</b>                        </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                        </td><td style="text-align: left;">                     </td><td style="text-align: left;">                                               </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+<code>HaverMetaData</code>    </td><td style="text-align: left;"> codes.out           </td><td style="text-align: left;"> series that hold records in the object        </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                        </td><td style="text-align: left;">                     </td><td style="text-align: left;">                                               </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+<code>HaverData</code>        </td><td style="text-align: left;"> noobs               </td><td style="text-align: left;"> series that do not have any valid data points </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                        </td><td style="text-align: left;"> noagg               </td><td style="text-align: left;"> series that cannot be aggregated              </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                        </td><td style="text-align: left;"> nodisagg            </td><td style="text-align: left;"> series that cannot be disaggregated           </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                        </td><td style="text-align: left;"> codes.out           </td><td style="text-align: left;"> series whose data has been retrieved          </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                        </td><td style="text-align: left;">                     </td><td style="text-align: left;">                                               </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+<code>HaverErrorReport</code> </td><td style="text-align: left;"> codes.found         </td><td style="text-align: left;"> series whose code and database were found     </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                        </td><td style="text-align: left;"> database.access     </td><td style="text-align: left;"> series whose database could not be accessed.  </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                        </td><td style="text-align: left;">                     </td><td style="text-align: left;"> The most likely reason for this is that the   </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                        </td><td style="text-align: left;">                     </td><td style="text-align: left;"> database name is misspelled or that           </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                        </td><td style="text-align: left;">                     </td><td style="text-align: left;"> <code>haver.path</code> is set incorrectly.         </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                        </td><td style="text-align: left;"> codes.notfound      </td><td style="text-align: left;"> series whose series code was not found        </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                        </td><td style="text-align: left;"> metadata.access     </td><td style="text-align: left;"> series whose metadata could not be accessed
+</td>
+</tr>
+
+</table>
+
+
+
+<h3>See Also</h3>
+
+<p><code><a href="Haver_package.html">Haver_package</a></code><br />
+<code><a href="haver_data.html">haver.data</a></code><br />
+<code><a href="haver_metadata.html">haver.metadata</a></code><br />
+<code><a href="HaverData.html">HaverData</a></code><br />
+<code><a href="HaverMetaData.html">HaverMetaData</a></code><br />
+<code><a href="HaverErrorReport.html">HaverErrorReport</a></code><br />
+<code><a href="haver_datamd.html">haver.datamd</a></code><br />
+<code><a href="haver_setalias.html">haver.setalias</a></code><br />
+<code><a href="haver_limits.html">haver.limits</a></code><br />
+<code><a href="Haver_advanced.html">Haver_advanced</a></code><br />
+<code><a href="Haver_legacy.html">Haver_legacy</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+haver.path()
+haver.path("examples")
+
+## When applying the function to a 'HaverMetaData' object, a list
+## of codes that have records in the object is returned
+hmd_w &lt;- haver.metadata(dat="haverw")
+haver.codelists(hmd_w)
+
+## Applying the function to 'HaverData' objects yields information on
+## the successfully retrieved series and on the ones that got dropped:
+hmd_mqa &lt;- haver.metadata(dat="havermqa")
+hd_q    &lt;- haver.data(codes=hmd_mqa, freq="quarterly")
+haver.codelists(hd_q)
+
+## Lastly, one can apply 'haver.codelists' to 'HaverErrorReport' objects.
+## The latter are returned by 'haver.data' and 'haver.metadata'
+## when there is a fundamental flaw in a query.
+ex_codes &lt;- c("wrongdb:code1", "wrongdb:code2", "haverd:wrongcode")
+her_hd  &lt;- haver.data(ex_codes)
+her_hd
+haver.codelists(her_hd)
+
+## The same object is returned from a correspondingly flawed metadata query:
+her_hmd &lt;- haver.metadata(ex_codes)
+her_hmd
+haver.codelists(her_hmd)
+
+haver.path("restore")
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>

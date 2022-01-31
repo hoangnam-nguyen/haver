@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Get Detailed Information about a Haver Time Series (legacy...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for dlxGetInfo {Haver}"><tr><td>dlxGetInfo {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>
+Get Detailed Information about a Haver Time Series (legacy function / help entry)
+</h2>
+
+<h3>Description</h3>
+
+<p>Get detailed information about a Haver time series.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+dlxGetInfo(varname, database)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>varname</code></td>
+<td>
+
+<p>A single Haver variable name.
+</p>
+</td></tr>
+<tr valign="top"><td><code>database</code></td>
+<td>
+
+<p>The Haver database in which the series you are examining resides.
+</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>Returns a list with the following fields defined.
+</p>
+<p>database: The full path to the database.
+</p>
+<p>varname: The time series variable name.
+</p>
+<p>startDate: A Date object. For weekly, monthly, quarterly, and annual 
+series, this will be the last day in the period. 
+</p>
+<p>endDate: A Date object. For weekly, monthly, quarterly, and annual 
+series, this will be the last day in the period.
+</p>
+<p>numobs: The number of observations in the series.
+</p>
+<p>frequency: A frequency code. 10=Annual, 30=Quarterly, 40=Monthly,
+51=Weekly Monday ... 57=Weekly Sunday, 60=Daily
+</p>
+<p>dateTimeMod: A POSIXct object showing the time the series was last modified.
+</p>
+<p>magnitude: Magnitude
+</p>
+<p>decPrecision: The decimal precision.
+</p>
+<p>difType: An integer value. 1 if data can contain negative values, 0 otherwise.
+</p>
+<p>aggType: An integer value. 1=Average, 2=Sum, 3=End of period, 9=Undefined, 
+0=not set
+</p>
+<p>dataType: One of US$, LocCur, US$/LC, LC/US$, INDEX, Units, 
+</p>
+<p>geography1: Primary geography code.
+</p>
+<p>geography2: Secondary geography code.
+</p>
+<p>descriptor: The series description.
+</p>
+<p>shortSource: The abbreviated name of the time series publisher.
+</p>
+<p>longSource: The full name of the time series publisher.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+    dlxGetInfo("gdp", "usecon")
+
+## End(Not run)
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>

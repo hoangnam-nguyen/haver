@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: HaverErrorReport Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for HaverErrorReport {Haver}"><tr><td>HaverErrorReport {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>
+HaverErrorReport Object
+</h2>
+
+<h3>Description</h3>
+
+<p>A HaverErrorReport object is returned by <code><a href="haver_data.html">haver.data</a></code> or <code><a href="haver_metadata.html">haver.metadata</a></code> as soon as one series code or database cannot be found.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'HaverErrorReport'
+print(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+
+<p>a <code>HaverErrorReport</code> object.
+</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>You can access various lists of series codes pertaining to <code>HaverErrorReport</code> objects using the function <code><a href="haver_codelists.html">haver.codelists</a></code>.
+This aides for example in fixing up queries that have failed.
+</p>
+
+
+<h3>Value</h3>
+
+<p><code>print</code> prints information contained in the object and returns it (invisibly).
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="Haver_package.html">Haver_package</a></code><br />
+<code><a href="haver_path.html">haver.path</a></code><br />
+<code><a href="haver_data.html">haver.data</a></code><br />
+<code><a href="haver_metadata.html">haver.metadata</a></code><br />
+<code><a href="HaverData.html">HaverData</a></code><br />
+<code><a href="HaverMetaData.html">HaverMetaData</a></code><br />
+<code><a href="haver_codelists.html">haver.codelists</a></code><br />
+<code><a href="haver_datamd.html">haver.datamd</a></code><br />
+<code><a href="haver_setalias.html">haver.setalias</a></code><br />
+<code><a href="haver_limits.html">haver.limits</a></code><br />
+<code><a href="Haver_advanced.html">Haver_advanced</a></code><br />
+<code><a href="Haver_legacy.html">Haver_legacy</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+haver.path()
+haver.path("examples")
+
+## The database 'HAVERD' is found but it does not contain series 'wrong1' and 'wrong2':
+her &lt;- haver.data(codes=c("wrong1", "wrong2", "fxtwb"), dat="haverd")
+her
+
+## The list of codes that caused the query to fail as well as the list of good codes
+## can be accessed with the 'haver.codelists' function.
+## Empty lists are returned as zero-length character vectors.
+haver.codelists(her)
+
+## If we can do without the codes that could not be found, we can query the
+## data of the good codes immediately:
+hd &lt;- haver.data(codes=haver.codelists(her)[["codes.found"]])
+
+haver.path("restore")
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>

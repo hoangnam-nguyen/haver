@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Get Metadata of an Existing HaverData Object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for haver.datamd {Haver}"><tr><td>haver.datamd {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>
+Get Metadata of an Existing HaverData Object
+</h2>
+
+<h3>Description</h3>
+
+<p><code>haver.datamd</code> returns the metadata of series contained in a <code>HaverData</code> object.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+haver.datamd(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>A <code>HaverData</code> object</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>&lsquo;md&rsquo; in the function name <code>haver.datamd</code> stands for &lsquo;metadata&rsquo;.
+Read &lsquo;datamd&rsquo; as &lsquo;the data's metadata&rsquo;.
+</p>
+<p>The metadata for all time series of a <code>HaverData</code> object are stored as a <code>HaverMetaData</code> object within the <code>HaverData</code> object.
+<code><a href="haver_datamd.html">haver.datamd</a></code> returns a copy of this object.
+</p>
+
+
+<h3>Value</h3>
+
+<p><code>haver.datamd</code> returns a <code><a href="HaverMetaData.html">HaverMetaData</a></code> object.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="Haver_package.html">Haver_package</a></code><br />
+<code><a href="haver_data.html">haver.data</a></code><br />
+<code><a href="haver_metadata.html">haver.metadata</a></code><br />
+<code><a href="HaverData.html">HaverData</a></code><br />
+<code><a href="HaverMetaData.html">HaverMetaData</a></code><br />
+<code><a href="HaverErrorReport.html">HaverErrorReport</a></code><br />
+<code><a href="haver_codelists.html">haver.codelists</a></code><br />
+<code><a href="haver_setalias.html">haver.setalias</a></code><br />
+<code><a href="haver_limits.html">haver.limits</a></code><br />
+<code><a href="Haver_advanced.html">Haver_advanced</a></code><br />
+<code><a href="Haver_legacy.html">Haver_legacy</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+haver.path()
+haver.path("examples")
+
+## We pull in time series data, and look at the associated metadata afterwards:
+hd &lt;- haver.data(codes=c("haverd:fxtwb", "haverw:lic")
+                 , freq="quart", aggmode="relaxed")
+hmd &lt;- haver.datamd(hd)
+hmd
+
+print(hmd, fields=NA)
+
+haver.path("restore")
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>

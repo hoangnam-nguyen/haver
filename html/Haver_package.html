@@ -1,0 +1,387 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Introduction to the 'Haver' Package</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for Haver_package {Haver}"><tr><td>Haver_package {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>
+Introduction to the <span class="pkg">Haver</span> Package
+</h2>
+
+<h3>Description</h3>
+
+<p>This document provides an introductory overview of functions that allow you to access data stored in Haver Analytics databases from within R.
+It also defines terminology and conventions that are relevant for the entire documentation of the package.
+</p>
+<p>The objects and functions of the <span class="pkg">Haver</span> package are designed to let you conveniently and efficiently access data and metadata of Haver Analytics databases.
+This is their only task: They are not designed for data analysis.
+Once you are past the query stage and you want to do data analysis, convert the data objects created by database queries into <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> objects that are more suitable for this purpose.
+To do so, you can use coercion functions provided by the <span class="pkg">Haver</span> package.
+</p>
+
+
+<h3>Getting to Know the <span class="pkg">Haver</span> Package Quickly</h3>
+
+<p>The basic operations of <span class="pkg">Haver</span> data queries are easy and can be learned quickly.
+In a nutshell, the functions that access Haver Analytics databases are called <code>haver.data</code> and <code>haver.metadata</code>.
+Both take as arguments specifications for databases and time series codes to be retrieved.
+The data and metadata are returned in objects <code>HaverData</code> and <code>HaverMetaData</code>, respectively.
+Data and metadata are linked closely: A time series retrieval results in a <code>HaverData</code> object and this object internally contains the corresponding metadata, which can be accessed at any time.
+Conversely, a <code>HaverMetaData</code> object resulting from a metadata query can be used as an input argument to <code>haver.data</code> in order to query the corresponding time series data.
+</p>
+<p>This help entry and some other help entries for the <span class="pkg">Haver</span> package are somewhat lengthy, but this is not because usage is complicated.
+Rather, they provide much detail that can be skipped by beginning users but that may become useful at a later stage.
+</p>
+<p>If you want to get a very quick introduction, read (sub-)sections &lsquo;Old and New Haver Functions&rsquo;, &lsquo;Where to Go from here&rsquo;, and &lsquo;Examples&rsquo; of this help entry, and do take note of the other section and subsection headings so you know where to look up information at a later point.
+</p>
+<p>The other sections than the ones just mentioned define terminology and/or provide information for efficiently gaining a deeper understanding of the package.
+If you decide to only skim through them for now, we recommend that you do not postpone a more thorough reading for too long.
+</p>
+
+
+<h3>Preliminaries</h3>
+
+
+
+<h4>DLX, Access to Databases, Operating System</h4>
+
+<p>&lsquo;Haver&rsquo; is short for the company name Haver Analytics, whereas &lsquo;DLX&rsquo; refers to a software bundle that is distributed by Haver Analytics (&lsquo;DLX&rsquo; is short for &lsquo;Data Link Express&rsquo;).
+DLX comprises all software components that update and provide access to Haver Analytics databases.
+For the practical purposes of this help file this distinction does not matter and you can read &lsquo;Haver&rsquo; and &lsquo;DLX&rsquo; interchangeably.
+This package uses the term &lsquo;Haver&rsquo; mostly when referring to databases, series codes, etc., related to Haver Analytics or the DLX software.
+</p>
+<p>Accessing Haver databases requires that you have access to Haver databases on a local or on a network drive.
+You do not need to have any Haver desktop client software installed.
+</p>
+<p>The <span class="pkg">Haver</span> package is only available on Windows operating systems.
+</p>
+
+
+
+<h4>Old and New <span class="pkg">Haver</span> Functions</h4>
+
+<p>As you will see, the names of the featured set of functions provided by the <span class="pkg">Haver</span> package start with &lsquo;haver&rsquo;.
+Previous versions of this package contained functions whose names started with &lsquo;dlx&rsquo;.
+To distinguish older from newer functions, help documents will refer to the old functions as the &ldquo;legacy &lsquo;dlx&rsquo; family of functions&rdquo; and to the new functions as the &ldquo;recommended &lsquo;haver&rsquo; family of functions&rdquo;.
+</p>
+<p>As this terminology implies, usage of the legacy &lsquo;dlx&rsquo; family of functions is discouraged since the recommended &lsquo;haver&rsquo; family of functions provides improved functionality.
+However, the legacy &lsquo;dlx&rsquo; family of functions is still available in the current <span class="pkg">Haver</span> package for backward compatibility reasons.
+Any existing scripts based on these functions will continue to work without modification.
+If you are already familiar with the workings of the legacy &lsquo;dlx&rsquo; family of functions you can jump to <a href="Haver_legacy.html">Haver_legacy</a> which will tell you about the most important differences between the two function families.
+</p>
+<p>Unless otherwise noted, any <span class="pkg">Haver</span> help document that is not explicitly geard towards describing the legacy &lsquo;dlx&rsquo; family of functions will solely be concerned with the recommended &lsquo;haver&rsquo; family of functions.
+For example, the statements of the following section on conventions of functions and help files of the <span class="pkg">Haver</span> package only apply to the recommended &lsquo;haver&rsquo; family of functions, as do statements of all subsequent sections in this help file.
+</p>
+
+
+
+<h4>Conventions of <span class="pkg">Haver</span> Functions and Objects and of <span class="pkg">Haver</span> Help Files</h4>
+
+
+
+<h5>Usage of Terms &lsquo;code&rsquo;, &lsquo;symbol&rsquo;, &lsquo;variable&rsquo;, etc.</h5>
+
+<p>Codes of Haver time series are referred to as <dfn>series codes</dfn>, <dfn>Haver codes</dfn>, or <dfn>Haver series codes</dfn>.
+The time series themselves are referred to as <dfn>Haver series</dfn> or <dfn>Haver time series</dfn>.
+</p>
+<p>To unambigously identify a Haver time series, you must indicate the series code and the database name.
+The term series code may or may not imply this full specification.
+If it should be stressed that a full specification is necessary, the word <dfn>full</dfn> is prepended to &lsquo;Haver code&rsquo;, &lsquo;series code&rsquo;, etc.
+If this is done using the form <em>database name - colon - series code</em>, the specification is said to be in <em>database:seriescode</em> format.
+The <em>database:seriescode</em> format within <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> corresponds to the <em>seriescode@database</em> format that is e.g. used in the DLX add-in for Excel.
+Conversely, if it should be stressed that a series code specification does NOT include the database name, the word <dfn>regular</dfn> is prepended to &lsquo;Haver code&rsquo;, &lsquo;series code&rsquo;, etc.
+</p>
+<p>The following table summarizes this information, with examples of full series codes given in <em>database:seriescode</em> format.
+</p>
+
+<table summary="Rd table">
+<tr>
+ <td style="text-align: left;">
+<strong>term</strong>                               </td><td style="text-align: left;"> <strong>example</strong> </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+Haver code, series code, Haver series code  </td><td style="text-align: left;"> gdp, usecon:gdp  </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                                            </td><td style="text-align: left;">                  </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+full Haver code, full series code, etc.     </td><td style="text-align: left;"> usecon:gdp       </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+                                            </td><td style="text-align: left;">                  </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+regular Haver code, etc.                    </td><td style="text-align: left;"> gdp
+</td>
+</tr>
+
+</table>
+
+<p><em>Side note:</em> If a regular series code exists in two databases, it usually refers to the same concept, potentially with differences in frequencies (e.g. &lsquo;daily:ffed&rsquo; and &lsquo;weekly:ffed&rsquo;).
+Cases where a regular series code exists in multiple databases and refers to different concepts are very rare.<br />
+</p>
+<p>The term &lsquo;variable&rsquo; is mostly avoided since it can mean many different things (a variable of a statistical model, a variable within computer code, an <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> symbol, Haver codes, etc.).
+</p>
+<p>&lsquo;variables&rsquo; of <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> code are called <dfn>symbols</dfn> or <dfn><span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> symbols</dfn>. For example, <code>x</code> and <code>y</code> of the expression<br />
+<code>&gt; x &lt;- y + 7</code><br />
+are <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> symbols.
+</p>
+
+
+
+<h5>Casing</h5>
+
+<p>Arguments to <span class="pkg">Haver</span> functions are not case-sensitive (if the argument is of type character).
+In particular, you can specify Haver series codes in upper case or lower case or any mixture thereof.
+</p>
+<p>Function names of <span class="pkg">Haver</span> functions are always lower case (e.g. <code>haver.data</code>).
+Names of objects of the <span class="pkg">Haver</span> package are in &lsquo;UpperCamelCase&rsquo;, i.e. in lower case with the starting letter of a word capitalized (e.g. <code>HaverMetaData</code>).
+</p>
+<p>Almost all symbols and field names returned by <span class="pkg">Haver</span> functions are lower case.
+In particular, Haver series codes or database names returned by <span class="pkg">Haver</span> functions are always lower case.
+The field names of a HaverMetaData object are also lower case (see <code><a href="HaverMetaData.html">HaverMetaData</a></code>).
+The exception to the &lsquo;return character values in lower case&rsquo; convention of <span class="pkg">Haver</span> functions are the values of most fields of <a href="HaverMetaData.html">HaverMetaData</a> objects.
+</p>
+
+
+
+<h5>Example Code Symbol Names</h5>
+
+<p>The most important objects of the <span class="pkg">Haver</span> package are <code>HaverData</code> and <code>HaverMetaData</code> objects, to be described below and in other help files.
+Whenever an example <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> code statement in a help file assigns such an object to a symbol, symbols &lsquo;hd&rsquo; and &lsquo;hmd&rsquo; are used, possibly with suffixes that are easily understood within the context (&lsquo;hd_1&rsquo;, &lsquo;hd_2&rsquo;, &lsquo;hmd_d&rsquo;, etc.).
+Objects of type <code>HaverErrorReport</code> are called &lsquo;her&rsquo;.
+Any other <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> symbols that are defined in example code start with &lsquo;ex_&rsquo;.
+</p>
+<p>All of these symbols are avaiable for interactive exploration after <code><a href="../../utils/html/example.html">example</a></code> concludes.
+Note that executing the &lsquo;Examples&rsquo; section will overwrite any symbols with identical names in the global workspace.
+If you want to prevent this, use the <code>local=TRUE</code> option of <code>example</code>.
+</p>
+
+
+
+<h5>Date Format</h5>
+
+<p>Dates are always in the format yyyy-mm-dd.
+For example, 24 March 2014 is denoted 2014-03-24.
+</p>
+
+
+
+<h5>Missing Values</h5>
+
+<p>Missing values for time series data are frequently referred to as &lsquo;NAs&rsquo;.
+In data sets missing values are recorded as (numeric) NAs.
+</p>
+
+
+
+
+<h3>Reinstalling the <span class="pkg">Haver</span> Package</h3>
+
+<p>If you want to uninstall the <span class="pkg">Haver</span> package, simply issuing<br />
+<code>&gt; remove.packages("Haver")</code><br />
+may result in an incomplete deinstallation, which may cause problems for reinstalling the package (you may have to quit <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> and manually delete the remnants of the old installation).
+If the <span class="pkg">Haver</span> package is attached to your <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> search path, be sure to issue<br />
+<code>&gt; detach("package:Haver", unload=TRUE)</code><br />
+before calling <code>remove.packages</code>.
+</p>
+
+
+<h3>Preparatory Steps for <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> Code Examples</h3>
+
+
+
+<h4>Example Databases</h4>
+
+<p>The <span class="pkg">Haver</span> package comes with three example databases that are used frequently in the &lsquo;Examples&rsquo; section of <span class="pkg">Haver</span> help entries: &lsquo;HAVERD&rsquo;, &lsquo;HAVERW&rsquo;, and &lsquo;HAVERMQA&rsquo;.
+They contain daily, weekly, and monthly/quarterly/annual data, respectively.
+These databases are subsequently referred to as the &lsquo;example databases&rsquo;.
+</p>
+<p>Do not use data contained in example databases for analysis.
+They are shipped for demonstration purposes only.
+The data contained in these databases is several years old.
+</p>
+<p>The Haver databases that your institution subscribes to and that you can use in analysis are referred to as the &lsquo;actual databases&rsquo; or &lsquo;actual Haver databases&rsquo;.
+Keep in mind that, while the example databases contain only between 3 and 161 series, actual Haver databases contain thousands or even hundreds of thousands of series.
+</p>
+<p>In rare cases, help files will refer to series in actual databases.
+Such references are only made outside of &lsquo;Examples&rsquo; sections.
+</p>
+
+
+
+<h4>Setting the Haver Database Path to Actual and Example Databases</h4>
+
+<p>Before Haver database queries can be executed the correct database directory path has to be set.
+This is done with <code><a href="haver_path.html">haver.path</a></code>.
+In most cases you will not have to do this as <code>haver.path</code> tries to set the correct path to the actual Haver databases automatically.
+</p>
+<p>The path to the example databases is different than the path to the actual databases.
+<code>haver.path</code> provides a convenient syntax shortcut for setting the path to example databases and for restoring the path to the actual databases.
+This is done by the statements<br />
+<code>&gt; haver.path("examples")</code><br />
+<code>&gt; haver.path("restore")</code><br />
+which you will find at the beginning and at the end (respectively) of each &lsquo;Examples&rsquo; section of <span class="pkg">Haver</span> help entries.
+As an additional safeguard there is a statement<br />
+<code>&gt; haver.path()</code><br />
+at the very top of each &lsquo;Examples&rsquo; section which displays the path setting that was in place before the &lsquo;Examples&rsquo; section was entered.
+</p>
+<p>Depending on the configuration of <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> and of DLX on your machine, it may occur that calling <code>haver.path("examples")</code> and <code>haver.path("restore")</code> does not work.
+In this case, executing the examples using <code><a href="../../utils/html/example.html">example</a></code> will not be possible.
+However, you can still set the path to the example databases manually and copy &amp; paste statements from the &lsquo;Examples&rsquo; sections to the <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> command prompt.
+</p>
+<p>To set the path to the example databases manually, first take note of the path setting to the actual databases, which is displayed by<br />
+<code>&gt; haver.path()</code><br />
+Then, execute<br />
+<code>&gt; haver.path(set=EXAMPLE_PATH)</code><br />
+where <code>EXAMPLE_PATH</code> is the subdirectory &lsquo;dat&rsquo; of the installation directory of the Haver package.
+For example, if you had installed the Haver package to &lsquo;c:\r\r-3.0.2\library&rsquo;, you would have to execute<br />
+<code>&gt; haver.path(set="c:\\r\\r-3.0.2\\library\\Haver\\dat")</code><br />
+Note the use of a double backslash as directory separator.
+Once you are done looking at the examples, manually set the path back to the actual Haver databases.
+</p>
+
+
+
+<h3>Where to Go from Here</h3>
+
+<p>First, read and/or execute the &lsquo;Examples&rsquo; section below (to execute the examples, use the <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> function <code><a href="../../utils/html/example.html">example</a></code>).
+It provides introductory examples to give you a first idea on how to use functions of the <span class="pkg">Haver</span> package.
+</p>
+<p>You can then go on to a more detailed exposition of the functions <code><a href="haver_metadata.html">haver.metadata</a></code> and <code><a href="haver_data.html">haver.data</a></code>.
+The help files for the two functions contain a lot of detail, too much detail probably for a beginning <span class="pkg">Haver</span> user.
+You absolutely do not have to read everything, but do take note of the (sub-) section headings in these help files so you know where to look up information at a later point.
+You should read the files thoroughly enough to be able to understand the &lsquo;Examples&rsquo; sections of both files.
+</p>
+<p>You can then examine the three objects involved and learn how to manipulate them: <code><a href="HaverMetaData.html">HaverMetaData</a></code>, <code><a href="HaverData.html">HaverData</a></code>, and <code><a href="HaverErrorReport.html">HaverErrorReport</a></code>.
+Along the way, you will come across functions <code><a href="haver_codelists.html">haver.codelists</a></code>, <code><a href="haver_datamd.html">haver.datamd</a></code>, and <code><a href="haver_setalias.html">haver.setalias</a></code>.
+</p>
+<p>Finally, <a href="Haver_advanced.html">Haver_advanced</a> provides an extended real-world data query example with further illustrations of how you can use the <span class="pkg">Haver</span> interface in practice.
+</p>
+<p>If at any point you have trouble retrieving data because of path settings, look at <code><a href="haver_path.html">haver.path</a></code>.
+</p>
+<p>The <span class="pkg">Haver</span> package imposes artificial limits on the size of data queries.
+These limits may never become relevant for you.
+If they do, you can change the settings for these limits.
+Should a <span class="pkg">Haver</span> routine notify you that a query is not possible because of query size limits, <code><a href="haver_limits.html">haver.limits</a></code> provides information on the customization of query limits.
+</p>
+
+
+<h3>Author(s)</h3>
+
+    
+<p>Haver Analytics &lt;tech@haver.com&gt;
+</p>
+<p>Maintainer: Haver Analytics &lt;tech@haver.com&gt;
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="haver_path.html">haver.path</a></code><br />
+<code><a href="haver_data.html">haver.data</a></code><br />
+<code><a href="haver_metadata.html">haver.metadata</a></code><br />
+<code><a href="HaverData.html">HaverData</a></code><br />
+<code><a href="HaverMetaData.html">HaverMetaData</a></code><br />
+<code><a href="HaverErrorReport.html">HaverErrorReport</a></code><br />
+<code><a href="haver_codelists.html">haver.codelists</a></code><br />
+<code><a href="haver_datamd.html">haver.datamd</a></code><br />
+<code><a href="haver_setalias.html">haver.setalias</a></code><br />
+<code><a href="haver_limits.html">haver.limits</a></code><br />
+<code><a href="Haver_advanced.html">Haver_advanced</a></code><br />
+<code><a href="Haver_legacy.html">Haver_legacy</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## This section provides introductory examples.
+## It's purpose is to give you an overview of the Haver package.
+## Detailed explanations are skipped at this point.
+
+## Display current path setting:
+haver.path()
+
+## Set the database path to the directory of the example databases:
+haver.path("examples")
+
+## This directory contains three databases: HAVERD, HAVERW, and HAVERMQA.
+## Function 'haver.metadata' accesses metadata information of Haver databases.
+## We use it here to get an overview of what is in the databases.
+haver.metadata(database="haverd")
+haver.metadata(database="haverw")
+
+## Actual Haver Analytics databases have thousands or even hundreds of thousands
+## of series. In such and other cases, assigning the output to a symbol
+## is appropriate. As usual, this prevents printing:
+hmd_mqa &lt;- haver.metadata(database="havermqa")
+
+## Symbol 'hmd_mqa' now holds a HaverMetaData object.
+## You can view its contents in the viewer:
+## Not run: 
+View(hmd_mqa)
+
+## End(Not run)
+
+## Let's pull in three exchange rate series from 'HAVERD'.
+## 'haver.data' is the function to retrieve time series data.
+## We specify a starting date in order to limit the output.
+hd_1 &lt;- haver.data(codes=c("fxtwb", "fxtwm", "fxtwotp"),
+                   database="haverd", start=as.Date("2012-02-15", format="%Y-%m-%d"))
+
+## 'hd_1' is of class 'HaverData':
+hd_1
+
+## The metadata has automatically been saved within this object.
+## We can access it using function 'haver.datamd':
+haver.datamd(hd_1)
+
+## Alternatively, we can assign the HaverMetaData object to a symbol
+## and then customize the output:
+hmd_1 &lt;- haver.datamd(hd_1)
+print(hmd_1, fields=c("code", "descriptor"), desc.length=60)
+
+## We can pull in data from more than one database using the
+## 'database:seriescode' format in the 'codes' argument. Note that in the
+## following query the daily series gets aggregated to weekly frequency.
+## The frequency of the resulting data set is weekly.
+hd_2 &lt;- haver.data(codes=c("haverD:fxtwb", "haverW:farbn"),
+                   start=as.Date("2012/01/01", format="%Y/%m/%d"))
+hd_2
+
+## Next, we pull in data from the entire 'HAVERMQA' database. To do this,
+## we use the HaverMetaData object hmd_mqa which we have created earlier
+## and feed it into the data retrieval.
+## Since the lowest frequency of the queried series is annual, series with higher
+## frequencies get aggregated. 'haver.data' also informs us that two series
+## cannot be aggregated. They get dropped from the query.
+hd_mqa  &lt;- haver.data(codes=hmd_mqa)
+
+## You can look at the data set in the viewer:
+## Not run: 
+View(hd_mqa)
+
+## End(Not run)
+
+## You can specify a higher frequency if you want, say, quarterly.
+## Then 'haver.data' drops annual series from the query:
+hd_mqa2 &lt;- haver.data(codes=hmd_mqa, freq="q")
+
+## To summarize statistical information, or for plotting, you must convert
+## the HaverData object to another object, for example, an R 'ts' object:
+ex_ts &lt;- as.ts(hd_mqa2)
+plot(ex_ts[,1:6])
+
+haver.path("restore")
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>

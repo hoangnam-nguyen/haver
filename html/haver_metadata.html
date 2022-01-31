@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Access Haver Analytics Time Series Metadata</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for haver.metadata {Haver}"><tr><td>haver.metadata {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>
+Access Haver Analytics Time Series Metadata
+</h2>
+
+<h3>Description</h3>
+
+<p><code>haver.metadata</code> queries metadata information on time series contained in Haver Analytics databases.
+The information is returned either as a <code>HaverMetaData</code> object or as a <code>data.frame</code>.
+</p>
+<p>This help entry assumes that you are familiar with <a href="Haver_package.html">Haver_package</a>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+haver.metadata(codes, database, decode = TRUE, cbreak = 500)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>codes</code></td>
+<td>
+
+<p>is either a character vector or it is an object that fulfills the conditions of<br />
+<code><a href="haver_data.html">haver.hasfullcodes</a></code>.
+If a character vector is supplied, the elements can be regular series codes or additionally supply the database where the code resides, in which case the elements must be specified in <em>database:seriescode</em> format.
+Examples of character vector elements are &lsquo;gdp&rsquo; and &lsquo;usecon:gdp&rsquo;.
+Haver series codes may also be supplied through an object that passes <code><a href="haver_data.html">haver.hasfullcodes</a></code>.
+The only difference of usage of the <code>codes</code> argument in comparison to <code><a href="haver_data.html">haver.data</a></code> is that it IS optional here (see section &lsquo;Details&rsquo; below).
+</p>
+</td></tr>
+<tr valign="top"><td><code>database</code></td>
+<td>
+
+<p>is a character string. This argument is optional and specifies a default Haver database (excluding the path to the database, and excluding any file extension).
+If this argument is omitted, all elements of &lsquo;codes&rsquo; must be in <em>database:seriescode</em> format. Otherwise the function errors out.
+</p>
+</td></tr>
+<tr valign="top"><td><code>decode</code></td>
+<td>
+
+<p>is a logical TRUE / FALSE. This option is rarely used.
+By default (<code>decode=TRUE</code>), metadata information that is numerically encoded will be translated to meaningful character strings.
+For example, internally the aggregation type &lsquo;AVG&rsquo; (average) is encoded as &lsquo;1&rsquo;, and the default <code>decode=TRUE</code> will re-translate this into &lsquo;AVG&rsquo;.
+</p>
+</td></tr>
+<tr valign="top"><td><code>cbreak</code></td>
+<td>
+
+<p>is an integer. This option is rarely needed and specifies the number of codes after which each C-level function of the <span class="pkg">Haver</span> package checks for user interrupts.
+If you want to switch off checking for interrupts, specify a very large value, such as <code>cbreak=1e8</code>.
+</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>Argument <code>codes</code> may be omitted if the argument <code>database</code> is supplied, in which case the request is interpreted as &lsquo;all series from database <em>database</em>&rsquo;.
+Note that this is not possible with <code><a href="haver_data.html">haver.data</a></code>.
+</p>
+<p>There are three possible combinations of using arguments <code>codes</code> and <code>database</code>.
+</p>
+
+<ol>
+<li><p> only supply <code>codes</code>.
+In this case all elements of <code>codes</code> have to be in <em>database:seriescode</em> format.
+</p>
+</li>
+<li><p> only supply <code>database</code>.
+This will retrieve metadata for all series contained in <em>database</em>.
+</p>
+</li>
+<li><p> supply both <code>codes</code> and <code>database</code>.
+Metadata for all elements of <code>codes</code> is queried.
+If an element of <code>codes</code> is not in <em>database:seriescode</em> format, the value of <code>database</code> will serve as the default database.
+</p>
+</li></ol>
+
+<p>The order of series records within the returned object corresponds to the order of series in the input argument <code>codes</code>.
+</p>
+<p>As is generally the case with <span class="pkg">Haver</span> functions, (character) values of arguments supplied are not case-sensitive.
+</p>
+
+
+<h3>Value</h3>
+
+<p>An object of class <code><a href="HaverMetaData.html">HaverMetaData</a></code>.
+They contain various fields with information on series metadata.
+For a detailed description of these fields, see <code><a href="HaverMetaData.html">HaverMetaData</a></code>.
+</p>
+<p>In the case of invalid series code and/or database specifications, a <code><a href="HaverErrorReport.html">HaverErrorReport</a></code> is returned.
+</p>
+
+
+<h3>Query Errors</h3>
+
+<p>As soon as one series code or one database specified in a query cannot be found, <code>haver.metadata</code> returns a <code><a href="HaverErrorReport.html">HaverErrorReport</a></code>.
+This object contains details on what went wrong with the query.
+The function <code><a href="haver_codelists.html">haver.codelists</a></code> enables you to get at lists of series codes that could not be found.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="Haver_package.html">Haver_package</a></code><br />
+<code><a href="haver_path.html">haver.path</a></code><br />
+<code><a href="haver_data.html">haver.data</a></code><br />
+<code><a href="HaverData.html">HaverData</a></code><br />
+<code><a href="HaverMetaData.html">HaverMetaData</a></code><br />
+<code><a href="HaverErrorReport.html">HaverErrorReport</a></code><br />
+<code><a href="haver_codelists.html">haver.codelists</a></code><br />
+<code><a href="haver_datamd.html">haver.datamd</a></code><br />
+<code><a href="haver_setalias.html">haver.setalias</a></code><br />
+<code><a href="haver_limits.html">haver.limits</a></code><br />
+<code><a href="Haver_advanced.html">Haver_advanced</a></code><br />
+<code><a href="Haver_legacy.html">Haver_legacy</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+haver.path()
+haver.path("examples")
+
+## The following statements illustrate how you can specify series codes and
+## database names. Argument usage of 'codes' and 'database' is identical to
+## the statements of the 'Examples' section in 'haver.data'.
+## All queries below are equivalent.
+haver.metadata(cod=c(       "fxtwb",        "fxtwm",        "fxtwotp"), dat="haverd"  )
+haver.metadata(cod=c(       "FXTWB",        "FXTWM",        "FXTWOTP"), dat="HAVERD"  )
+haver.metadata(cod=c("haverd:fxtwb",        "fxtwm",        "fxtwotp"), dat="haverd"  )
+haver.metadata(cod=c("haverd:fxtwb", "haverd:fxtwm", "haverd:fxtwotp")                )
+haver.metadata(cod=c("haverd:fxtwb", "haverd:fxtwm", "haverd:fxtwotp"), dat="havermqa")
+
+## Querying codes from multiple databases is possible:
+hmd_1 &lt;- haver.metadata( cod=c("haverD:fxtwb", "haverW:lic", "fcm1") , dat="haverMQA")
+hmd_1
+
+## Querying all codes of a database is not possible with 'haver.data',
+## but it is with 'haver.metadata':
+hmd_2 &lt;- haver.metadata( dat="haverd" )
+hmd_2
+
+## Note that when querying an entire database, you must name the
+## argument 'database' explicitly.
+## Not run: 
+haver.metadata("haverd")
+
+## End(Not run)
+
+## The statement above produces an error since the first argument of
+## 'haver.metadata' is 'codes', but we meant to specify 'database',
+## so to accomplish what we want to do we have to run:
+haver.metadata(database="haverd")
+
+## When setting the argument 'decode=FALSE', some metadata remain encoded as
+## numeric values. In rare cases it may be helpful to look at these numeric
+## values. For example:
+hmd_w &lt;- haver.metadata(database="haverw", decode=FALSE)
+table(hmd_w[["frequency"]])
+
+## shows a frequency count of the series in 'HAVERW'. 9 of those series have
+## a release day-of-week of 53, 12 series of 56. These values correspond to
+## Wednesday and Saturday, respectively (see 'HaverMetaData'). This can
+## be confirmed by looking at one of the fields 'startdate' or 'enddate':
+table(weekdays(hmd_w[["enddate"]]))
+
+haver.path("restore")
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>

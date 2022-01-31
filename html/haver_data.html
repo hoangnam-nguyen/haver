@@ -1,0 +1,585 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Access Haver Analytics Time Series Data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for haver.data {Haver}"><tr><td>haver.data {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>
+Access Haver Analytics Time Series Data
+</h2>
+
+<h3>Description</h3>
+
+<p><code>haver.data</code> queries time series data contained in Haver Analytics databases.
+The data are returned either as a <code>HaverData</code> object, as a <code><a href="../../base/html/data.frame.html">data.frame</a></code>, as a <code><a href="../../stats/html/ts.html">ts</a></code> object, or as a <code><a href="../../zoo/html/zoo.html">zoo</a></code> object.
+</p>
+<p><code>haver.hasfullcodes</code> is a small helper function.
+</p>
+<p>This help entry assumes that you are familiar with <a href="Haver_package.html">Haver_package</a>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+haver.data(codes, database, start, end, frequency,
+           rtype = "HaverData", aggmode = "strict",
+           eop.dates = FALSE, limits = TRUE, cbreak = 500)
+
+haver.hasfullcodes(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>codes</code></td>
+<td>
+
+<p>is either a character vector or it is an object that fulfills the conditions of<br />
+<code>haver.hasfullcodes</code>.
+If a character vector is supplied, the elements can be regular series codes or additionally supply the database where the code resides, in which case the elements must be specified in <em>database:seriescode</em> format.
+Examples of character vector elements are &lsquo;gdp&rsquo; and &lsquo;usecon:gdp&rsquo;.
+Haver series codes may also be supplied through an object that passes <code>haver.hasfullcodes</code>.
+The only difference of usage of the <code>codes</code> argument in comparison to <code><a href="haver_metadata.html">haver.metadata</a></code> is that it is NOT optional here (see section &lsquo;Details&rsquo; below).
+</p>
+</td></tr>
+<tr valign="top"><td><code>database</code></td>
+<td>
+
+<p>is a character string. This argument is optional and specifies a default Haver database (excluding the path to the database, and excluding any file extension).
+If this argument is omitted, all elements of &lsquo;codes&rsquo; must be in <em>database:seriescode</em> format. Otherwise the function errors out.
+</p>
+</td></tr>
+<tr valign="top"><td><code>start</code></td>
+<td>
+
+<p>an R Date object.
+Specifies the starting date of the query.
+Even though <code>start</code> is supplied as a Date object, it is interpreted within the context of the frequency of the data set.
+This is an important point.
+See section &lsquo;Specifying Query Starting and Ending Periods&rsquo; below for details.
+</p>
+</td></tr>
+<tr valign="top"><td><code>end</code></td>
+<td>
+
+<p>an R Date object.
+Specifies the ending date of the query.
+Analogous comments as for <code>start</code> apply.
+</p>
+</td></tr>
+<tr valign="top"><td><code>frequency</code></td>
+<td>
+
+<p>a string. Specifies the target frequency of the query.
+One of &lsquo;daily&rsquo;, &lsquo;weekly&rsquo;, &lsquo;monthly&rsquo;, &lsquo;quarterly&rsquo;, and &lsquo;annual&rsquo;, or any abbreviations thereof, down to a single character.
+</p>
+</td></tr>
+<tr valign="top"><td><code>rtype</code></td>
+<td>
+
+<p>a character string. Specifies the return type of the function. One of &lsquo;HaverData&rsquo; (the default), &lsquo;data.frame&rsquo;, &lsquo;ts&rsquo;, and &lsquo;zoo&rsquo;.
+</p>
+</td></tr>
+<tr valign="top"><td><code>aggmode</code></td>
+<td>
+
+<p>the aggregation mode of the query. One of &lsquo;strict&rsquo;, &lsquo;relaxed&rsquo;, and &lsquo;force&rsquo;.
+See section &lsquo;Aggregation Modes&rsquo; below for details.
+</p>
+</td></tr>
+<tr valign="top"><td><code>eop.dates</code></td>
+<td>
+
+<p>logical <code>TRUE</code>/<code>FALSE</code>. By default (<code>eop.dates=FALSE</code>), elements of the time vector are displayed as periods (e.g. &lsquo;1988-Q1&rsquo;).
+If <code>eop.dates=TRUE</code>, end-of-period dates are used instead (e.g. &lsquo;1988-03-31&rsquo;).
+</p>
+</td></tr>
+<tr valign="top"><td><code>limits</code></td>
+<td>
+
+<p>logical <code>TRUE</code>/<code>FALSE</code>. If <code>limits=FALSE</code>, <code>haver.data</code> ignores settings regarding query limits.
+</p>
+</td></tr>
+<tr valign="top"><td><code>cbreak</code></td>
+<td>
+
+<p>is an integer. This option is rarely needed and specifies the number of codes after which each C-level function of the <span class="pkg">Haver</span> package checks for user interrupts.
+If you want to switch off checking for interrupts, specify a very large value, such as <code>cbreak=1e8</code>.
+</p>
+</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+
+<p>a <code>HaverMetaData</code> object or a <code>data.frame</code> that fulfills certain conditions. See section &lsquo;details&rsquo; below.
+</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>Both <code>haver.data</code> and <code><a href="haver_metadata.html">haver.metadata</a></code> take arguments <code>codes</code> and <code>database</code>.
+They allow you to conveniently specify Haver Analytics series codes.
+Usage of these arguments in the two functions is very similar, with just one exception:
+If the argument <code>codes</code> is omitted in <code>haver.metadata</code>, the function interprets the request as &lsquo;all series codes from database <em>database</em>&rsquo;.
+In <code>haver.data</code>, such an interpretation is not made, and consequently the argument <code>codes</code> is not optional there.
+</p>
+<p>The order of series records within the returned object corresponds to the order of series in the input argument <code>codes</code>.
+</p>
+<p>As is generally the case with <span class="pkg">Haver</span> functions, (character) values of arguments supplied are not case-sensitive.
+</p>
+<p>An object that passes the test of <code>haver.hasfullcodes</code> can be used as input argument <code>codes</code> instead of a character vector.
+<code>haver.hasfullcodes</code> returns a logical &lsquo;TRUE&rsquo; if an object satisfies the following conditions:
+</p>
+
+<ul>
+<li><p> the <code>class</code> is <code>HaverMetaData</code> or
+</p>
+</li>
+<li><p> the <code>class</code> is <code>data.frame</code> and in addition the data.frame's first two columns
+</p>
+
+<ul>
+<li><p> are named &lsquo;database&rsquo; and &lsquo;code&rsquo;
+</p>
+</li>
+<li><p> have entries of type &lsquo;character&rsquo;.
+Note that entries of type &lsquo;factor&rsquo; are not allowed.
+</p>
+</li>
+<li><p> have no empty entries
+</p>
+</li>
+<li><p> have only alphanumeric entries
+</p>
+</li>
+<li><p> have at least one entry (the <code>data.frame</code> has at least one row).
+</p>
+</li></ul>
+
+</li></ul>
+
+<p>See the &lsquo;Examples&rsquo; section below for more information on this technique.
+</p>
+
+
+<h3>Value</h3>
+
+<p>The return value of <code>haver.data</code>, by default, is a <code>HaverData</code> object.
+You can request different return types using the function argument <code>rtype</code>.
+Besides &lsquo;HaverData&rsquo;, admitted values are &lsquo;data.frame&rsquo;, &lsquo;ts&rsquo;, and &lsquo;zoo&rsquo;.
+&lsquo;ts&rsquo; will only return a <code>ts</code> object if the data set frequency is monthly, quarterly, or annual.
+Otherwise a warning is issued and a <code>HaverData</code> object is returned.
+</p>
+<p>If you specify any other return type than the default, no metadata will be available in the returned objects.
+Series metadata can only be stored in HaverData objects.
+</p>
+<p>In the case of invalid series code and/or database specifications, a <code><a href="HaverErrorReport.html">HaverErrorReport</a></code> is returned.
+</p>
+<p><code>haver.hasfullcodes</code> returns a logical <code>TRUE</code>/<code>FALSE</code>.
+</p>
+
+
+<h3>Temporal Aggregation</h3>
+
+
+
+<h4>Determination of the Data Set Frequency</h4>
+
+<p>If option <code>frequency</code> is not specified the data set frequency corresponds to the lowest frequency of the series in the query.
+For example, querying a daily and a monthly series will result in a monthly data set, with daily values aggregated to monthly ones.
+</p>
+<p>If you do specify option <code>frequency</code>, then this setting takes precedence over the rule laid out in the previous paragraph.
+For example, when querying a daily and a monthly series and specifying <code>frequency="weekly"</code>, then the daily series gets aggregated to weekly values, whereas the monthly series gets dropped from the query (<span class="pkg">Haver</span> supports temporal aggregation, but not temporal disaggregation).
+</p>
+
+
+
+<h4>Temporal Aggregation Modes</h4>
+
+<p>A <span class="pkg">Haver</span> aggregation mode can either be &lsquo;strict&rsquo;, &lsquo;relaxed&rsquo;, or &lsquo;force&rsquo;.
+You can invoke a particular aggregation mode by setting the argument <code>aggmode</code> to one of these three possible values.
+The default is &lsquo;strict&rsquo;.
+</p>
+<p>Note the difference between the argument <code>aggmode</code> and the metadata field &lsquo;aggtype&rsquo;.
+Examples for &lsquo;aggtype&rsquo;s are &lsquo;AVG&rsquo; and &lsquo;SUM&rsquo; (see section &lsquo;Metadata Fields&rsquo; in <code><a href="HaverMetaData.html">HaverMetaData</a></code>).
+They define which calculations are carried out when a series is aggregated.
+<code>aggmode</code>s determine how these calculations behave in the presence of NAs.
+<code>aggmode</code> is set for a particular query, whereas &lsquo;aggtype&rsquo; is a fixed setting that an individual series has.
+</p>
+<p>For many queries, the default aggregation mode &lsquo;strict&rsquo; is the correct one to use.
+However, temporal aggregation of daily and weekly data to a lower frequency should be done under &lsquo;relaxed&rsquo; or &lsquo;force&rsquo; in most cases.
+Most economic daily time series, for example, have about 10 NAs per year because of holidays.
+Whenever a daily series with &lsquo;aggtype&rsquo;=AVG or &lsquo;aggtype&rsquo;=SUM has a missing value, its aggregated monthly value will be NA also, under the default aggregation mode &lsquo;strict&rsquo;.
+As a result, aggregating such daily series to monthly series will produce NAs mostly.
+You can remedy this by specifying <code>aggmode="relaxed"</code> or <code>aggmode="force"</code>.
+</p>
+<p>The following table describes the behavior that obtains with each combination of <code>aggmode</code> and &lsquo;aggtype&rsquo;.
+The term &lsquo;aggregated span&rsquo; used in the table stands for a time span <em>in the original frequency</em> that aggregates to one observation of the target frequency.
+For example, 1973-Jan - 1973-Mar is an aggregated span for quarterly aggregation to 1973-Q1.
+</p>
+
+<table summary="Rd table">
+<tr>
+ <td style="text-align: left;">
+<strong>aggtype</strong> </td><td style="text-align: left;">  <strong>aggmode</strong> </td><td style="text-align: left;"> <strong>rule for returned value</strong></td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;">         </td><td style="text-align: left;">                                       </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+EOP </td><td style="text-align: left;"> strict  </td><td style="text-align: left;"> Returns the value of the last period in the aggregated</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;">         </td><td style="text-align: left;"> span. If this value is missing, it returns missing.</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;"> relaxed </td><td style="text-align: left;"> Returns the last nonmissing value of the aggregated  </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;">         </td><td style="text-align: left;"> span. Returns missing only if all values in          </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;">         </td><td style="text-align: left;"> the aggregated span are missing.              </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;"> force   </td><td style="text-align: left;"> Same as under "relaxed".                      </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;">         </td><td style="text-align: left;">                                       </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+AVG </td><td style="text-align: left;"> strict  </td><td style="text-align: left;"> Does not return an aggregated value as soon as</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;">         </td><td style="text-align: left;"> one value in the aggregated span is missing.</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;"> relaxed </td><td style="text-align: left;"> Calculates an aggregated value as soon as</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;">         </td><td style="text-align: left;"> one value in the aggregated span is nonmissing.</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;"> force   </td><td style="text-align: left;"> Same as under "relaxed". </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;">         </td><td style="text-align: left;">                                       </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+SUM </td><td style="text-align: left;"> strict  </td><td style="text-align: left;"> Does not return an aggregated value as soon as</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;">         </td><td style="text-align: left;"> one value in the aggregated span is missing.</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;"> relaxed </td><td style="text-align: left;"> Same as under "strict".</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;"> force   </td><td style="text-align: left;"> Calculates an aggregated value as soon as one</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+    </td><td style="text-align: left;">         </td><td style="text-align: left;"> value in the aggregated span is nonmissing.
+</td>
+</tr>
+
+</table>
+
+
+
+
+<h3>Specifying Query Starting and Ending Periods</h3>
+
+<p>Start and end dates have to be supplied as <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> <code><a href="../../base/html/Dates.html">Date</a></code> object.
+If the start date is after the last observation of the requested series an error occurs and similarly for the end date.
+To minimize the possibility of erroneous query specifications start and end dates are restricted to the years 1900-2099.
+</p>
+<p>If argument <code>enddate</code> is after the last observation of the implied data set, or if argument <code>startdate</code> is before the first observation of the implied data set, observations in the data set returned are padded with <code>NA</code>s accordingly.
+In other words, time periods of the data set will always start with <code>startdate</code>, if specified, and will always end with <code>enddate</code>, if specified.
+</p>
+<p>Start and ending dates are supplied to <code>haver.data</code> as <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> <code><a href="../../base/html/Dates.html">Date</a></code> objects (i.e. as calendar dates), but the interpretation of what these dates mean depends on the frequency of the data set returned.
+For example, if <code>start=as.Date("2012-01-01", format="%Y-%m-%d")</code> and the data set is returned in annual frequency, it is taken to mean &lsquo;2012&rsquo;.
+This can be confusing if the frequency of the returned data set is not known in advance.
+Let's say that you think you have a list of monthly series codes but there is actually one or more annual codes among them, so the data get aggregated to annual frequency.
+If you specified <code>start</code> as above and in addition <code>end=as.Date("2012-05-31", format="%Y-%m-%d")</code>, both dates get interpreted as &lsquo;2012&rsquo;.
+<code>haver.data</code> will return a value for 2012, and it will use all data points from 2012-Jan to 2012-Dec to calculated this value.
+If there had in addition be daily series in the query, an aggregated value for 2012 would be calculated for them too, based on all data points from 2012-Jan-01 to 2012-Dec-31.
+To summarize:
+</p>
+
+<ul>
+<li><p> Start and ending periods are supplied as <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> Date objects (i.e. as calendar dates), but are interpreted as periods within the context of the frequency of the data set returned.
+</p>
+</li>
+<li><p> Any aggregation that takes place uses all underlying periods of the &lsquo;aggregated span&rsquo;, with no exceptions.
+The rules described in section &lsquo;Aggregation Modes&rsquo; apply, with no exceptions.
+</p>
+</li></ul>
+
+<p>For daily and weekly data sets it may happen that the dates of the data retrieved are slightly (by a few days) outside of the range specified by arguments <code>start</code> and <code>end</code>.
+</p>
+
+
+<h3>When Data Cannot Be Retrieved</h3>
+
+<p>In some instances, <code>haver.data</code> cannot retrieve data for a particular series or for a particular query.
+Dependening on the reason why this happens, <code>haver.data</code> responds in two different ways:
+It may either drop some series codes from the query and retrieve data for the other series codes, or it may retrieve no data at all and instead return a <code>HaverErrorReport</code> object.
+The paragraphs below state in which cases each behavior occurs and what you can do to fix up the query.
+</p>
+
+
+<h4>Dropping of Series</h4>
+
+<p>There are three instances where a query is successful (i.e. a <code>HaverData</code> object is returned) but some of the requested series get dropped from the query:
+</p>
+
+<ol>
+<li><p> A series does not have any data points.
+It only occurs if the series has no data point in the database.
+This is very rarely the case.
+A series does not get dropped if you specify starting and ending dates in such a way that there are no valid data points in this time span.
+The series will solely consist of NAs in this case.
+</p>
+</li>
+<li><p> A series cannot be aggregated to the data set frequency.
+This occurs, for example, when a series holds some kind of fraction (e.g. the trade balance as a percentage of GDP).
+Then the aggregated value cannot simply be calculated as a sum or average.
+Such series have aggtype=NDF or aggtype=NST, see <code><a href="HaverMetaData.html">HaverMetaData</a></code>.
+In these cases, Haver Analytics frequently provides separate series with aggregated values that are based on correct calculations.
+</p>
+</li>
+<li><p> A series cannot be disaggregated to the data set frequency.
+Temporal disaggregation is currently not supported by the <span class="pkg">Haver</span> package.
+</p>
+</li></ol>
+
+<p>If at least one series whose data can be retrieved remains, <code>haver.data</code> returns a <code>HaverData</code> object.
+If one or more series were dropped, this object contains information on the codes that failed, and on the reasons why this happened.
+The function <code><a href="haver_codelists.html">haver.codelists</a></code> enables you to get at lists of dropped series codes.
+</p>
+
+
+
+<h4>Query Errors</h4>
+
+<p>As soon as one series code or one database specified in a query cannot be found, <code>haver.data</code> returns a <code><a href="HaverErrorReport.html">HaverErrorReport</a></code>.
+This object contains details on what went wrong with the query.
+The <code><a href="haver_codelists.html">haver.codelists</a></code> method of the <code>HaverErrorReport</code> object enables you to get at lists of series codes that could not be found.
+</p>
+
+
+
+<h4>Duplicate Codes</h4>
+
+<p>Duplicates of <em>full</em> series codes are removed automatically.
+A warning is issued.
+For example, the query<br />
+<code>&gt; hd &lt;- haver.data(codes=c("fxtwb", "fxtwb"), dat="haverd"))</code><br />
+will return a data set that contains &lsquo;haverd:fxtwb&rsquo; just once.
+</p>
+<p>Duplicate <em>regular</em> series codes are allowed.
+For example,<br />
+<code>&gt; hd &lt;- haver.data(codes=c("daily:ffed", "weekly:ffed")))</code><br />
+will result in a data set that contains two series.
+This will, however, also be accompanied by a warning, for the following reasons:
+First, the <code>View</code> command will not work correctly anymore.
+With regards to the present example, it will display the first occurence of &lsquo;ffed&rsquo; twice.
+Secondly, if you want to assign aliases, you may not use two different aliases for &lsquo;daily:ffed&rsquo; and &lsquo;weekly:ffed&rsquo;.
+See section &lsquo;Assigning Aliases&rsquo; in <code><a href="haver_setalias.html">haver.setalias</a></code>.
+Moreover, while coercions to other objects will work correctly you will have multiple time series with identical names.
+In general, we advice you to avoid duplicate regular series codes within one query.
+</p>
+
+
+
+<h3>Daily and Weekly Queries</h3>
+
+<p>When querying a weekly series, the dates assigned to data points correspond to the release day-of-week of the series on which the data source publishes new data.
+When aggregating a daily series to weekly frequency, this release day is set to Friday.
+When querying multiple weekly series, the dates shown correspond to the release day of the first series in the data set.
+</p>
+<p>If you supply arguments <code>start</code> and <code>end</code>, it may happen that the starting and ending dates of the data retrieved are slightly (by a few days) outside of the implied time span.
+</p>
+<p>When aggregating daily or weekly series to a lower frequency, familiarity with Haver aggregation modes is necessary.
+See section &lsquo;Aggregation Modes&rsquo; above.
+</p>
+
+
+<h3>Query Limits</h3>
+
+<p>To provide a safeguard against large data queries that may either take very long or that consume an excessive amount of memory, <code>haver.data</code> by default checks settings on limits regarding data queries.
+There are two limits imposed. The first one specifies the maximum number of series in a query (default value: 5000) and the second one the maximum number of data points (default value: 15 million, which allows e.g. for 1000 daily series that span 50 years).
+You can query the current state and change these settings using <code><a href="haver_limits.html">haver.limits</a></code>, whose help entry discusses the issues related to query execution time and memory consumption in more detail.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="Haver_package.html">Haver_package</a></code><br />
+<code><a href="haver_path.html">haver.path</a></code><br />
+<code><a href="haver_metadata.html">haver.metadata</a></code><br />
+<code><a href="HaverData.html">HaverData</a></code><br />
+<code><a href="HaverMetaData.html">HaverMetaData</a></code><br />
+<code><a href="HaverErrorReport.html">HaverErrorReport</a></code><br />
+<code><a href="haver_codelists.html">haver.codelists</a></code><br />
+<code><a href="haver_datamd.html">haver.datamd</a></code><br />
+<code><a href="haver_setalias.html">haver.setalias</a></code><br />
+<code><a href="haver_limits.html">haver.limits</a></code><br />
+<code><a href="Haver_advanced.html">Haver_advanced</a></code><br />
+<code><a href="Haver_legacy.html">Haver_legacy</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+haver.path()
+haver.path("examples")
+
+## The following statements illustrate how you can specify series codes and
+## database names. Argument usage of 'codes' and 'database' is identical to
+## the statements of the 'Examples' section in 'haver.metadata'.
+## All queries below are equivalent. To limit the output, we
+## supply a start and an end date.
+ex_t1 &lt;- as.Date("2012-01-10", format="%Y-%m-%d")
+ex_tN &lt;- as.Date("2012-01-13", format="%Y-%m-%d")
+haver.data(cod=c(       "fxtwb",        "fxtwm",        "fxtwotp"), dat="haverd"  , sta=ex_t1, end=ex_tN)
+haver.data(cod=c(       "FXTWB",        "FXTWM",        "FXTWOTP"), dat="HAVERD"  , sta=ex_t1, end=ex_tN)
+haver.data(cod=c("haverd:fxtwb",        "fxtwm",        "fxtwotp"), dat="haverd"  , sta=ex_t1, end=ex_tN)
+haver.data(cod=c("haverd:fxtwb", "haverd:fxtwm", "haverd:fxtwotp")                , sta=ex_t1, end=ex_tN)
+haver.data(cod=c("haverd:fxtwb", "haverd:fxtwm", "haverd:fxtwotp"), dat="havermqa", sta=ex_t1, end=ex_tN)
+
+## Querying codes from multiple databases is possible:
+ex_tN &lt;- as.Date("2012-01-31", format="%Y-%m-%d")
+hd_1  &lt;- haver.data( cod=c("haverD:fxtwb", "haverW:lic", "fcm1") , dat="haverMQA", start=ex_t1, end=ex_tN)
+
+## Querying all codes of a database is possible with 'haver.metadata'
+## but not with 'haver.data', so the following produces an error:
+## Not run: 
+haver.data( dat="haverd" )
+
+## End(Not run)
+
+## You can assign the return value of 'haver.data' to a symbol, of course:
+ex_tN &lt;- as.Date("2012-01-13", format="%Y-%m-%d")
+hd_2  &lt;- haver.data(codes=c("fxtwb", "fxtwm", "fxtwotp") , database="haverd", start=ex_t1, end=ex_tN)
+
+## If you want to look at the data, you can use 'View':
+## Not run: 
+View(hd_2)
+
+## End(Not run)
+
+## You can also invoke the 'print' method of the object by typing its name:
+hd_2
+
+## You can request a lower frequency than daily, e.g. quarterly:
+## (at this frequency, we do not have to use options 'start' and 'end' 
+##  in order to limit output)
+hd_3 &lt;- haver.data(codes=c("fxtwb", "fxtwm", "fxtwotp") , database="haverd" , freq="q")
+hd_3
+
+## The data points are NAs because the default aggregation mode is 'strict'.
+## When aggregating daily data, it is frequently appropriate to use aggregation
+## modes that are less restrictive. For details, see section 'Aggregation Modes' above.
+hd_4 &lt;- haver.data(codes=c("fxtwb", "fxtwm", "fxtwotp") ,
+                   database="haverd" , freq="q", aggmode="relaxed")
+hd_4
+
+## Note that the default aggregation mode remains 'strict'.
+
+## Let's see what the database 'HAVERMQA' contains:
+hmd_mqa &lt;- haver.metadata(database="havermqa")
+## Not run: 
+View(hmd_mqa)
+
+## End(Not run)
+
+## We pick and retrieve a monthly, a quarterly, and an annual series.
+## The monthly and the quarterly series get aggregated to annual frequency.
+hd_5 &lt;- haver.data(codes=c("c", "fcm1", "ift"), database="havermqa",
+                   start=as.Date("2008-01-13", format="%Y-%m-%d"))
+hd_5
+
+## When we explicitly request a quarterly frequency, monthly series get aggregated
+## while annual ones get dropped:
+hd_6 &lt;- haver.data(codes=c("c", "fcm1", "ift"), database="havermqa",
+                   start=as.Date("2008-01-13", format="%Y-%m-%d"), freq="q")
+hd_6
+
+## We can investigate what series got dropped by using 'haver.codelists':
+haver.codelists(hd_6)
+
+## Every time series data retrieval also retrieves the series metadata and
+## attaches it to the 'HaverData' object.
+## You can access it using 'haver.datamd':
+haver.datamd(hd_6)
+
+## The previous call returned a 'HaverMetaData' object.
+## When assigning it to a symbol, you can customize its output:
+hmd_6 &lt;- haver.datamd(hd_6)
+print(hmd_6, fields=c("code", "frequency"))
+
+## You can retrieve an identical HaverData object that
+## displays end-of-period dates:
+hd_7 &lt;- haver.data(codes=c("c", "fcm1", "ift"), database="havermqa",
+                   start=as.Date("2008-01-13", format="%Y-%m-%d"),
+                   freq="q", eop.dates=TRUE)
+
+## If you do not need metadata attached to the data object,
+## you can request other return types, e.g. the R object 'ts':
+ex_ts &lt;- haver.data(codes=c("c", "fcm1", "ift"), database="havermqa",
+                    start=as.Date("2008-01-13", format="%Y-%m-%d"),
+                    freq="q", rtype="ts")
+ex_ts
+
+## 'ts' object data can directly be graphed:
+plot(ex_ts)
+
+## We can use a HaverMetaData object to specify codes for 'haver.data' queries:
+hmd_w &lt;- haver.metadata(dat="haverw")
+hd_w  &lt;- haver.data(codes=hmd_w)
+
+## We can add codes from other HaverMetaData objects, and manually
+## add or delete codes once we are working with data.frames
+## whose columns 1 and 2 contain database names and codes:
+ex_df_d    &lt;- as.data.frame(haver.metadata(dat="haverd"))
+ex_df_dw   &lt;- rbind(ex_df_d[1:2] , as.data.frame(hmd_w)[,1:2])
+ex_df_all  &lt;- rbind(ex_df_dw , data.frame(database="havermqa", code="c"))
+
+## If you are not sure whether you can use an object other than a character
+## vector as input for the 'codes' argument of 'haver.data', you can check with:
+haver.hasfullcodes(ex_df_all)
+
+## Since this is 'TRUE', we can pull in the data:
+hd_all &lt;- haver.data(codes=ex_df_all)
+print(haver.datamd(hd_all) , fields.disp=c("database", "code", "descriptor"))
+
+haver.path("restore")
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>

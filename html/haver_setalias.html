@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Assign Aliases to Haver Series Codes</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for haver.setalias {Haver}"><tr><td>haver.setalias {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>
+Assign Aliases to Haver Series Codes
+</h2>
+
+<h3>Description</h3>
+
+<p><code>haver.setalias</code> enables you to define your own series codes and use them in data analysis.
+You can assign a user-defined series code (an alias) to any Haver series in a <code>HaverMetaData</code> or <code>HaverData</code> object.
+The original Haver code also remains recorded.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+haver.setalias(x, codes, aliases, clear=FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+
+<p>a <code>HaverMetaData</code> or a <code>HaverData</code> object.
+</p>
+</td></tr>
+<tr valign="top"><td><code>codes</code></td>
+<td>
+<p>a character vector specifying Haver series codes that are to be given user-defined aliases (supplied by <code>aliases</code>).
+Note that <code>codes</code> must not contain database names.
+</p>
+</td></tr>
+<tr valign="top"><td><code>aliases</code></td>
+<td>
+<p>a character vector.
+Specifies the aliases that are to be given to the Haver series codes in <code>codes</code>.
+Must be of the same length as <code>codes</code>.
+</p>
+</td></tr>
+<tr valign="top"><td><code>clear</code></td>
+<td>
+
+<p>a logical <code>TRUE</code> / <code>FALSE</code>.
+If <code>clear=TRUE</code>, <code>haver.setalias</code> removes all information regarding aliases.
+</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>The return value is of the same type as the first argument to the function, i.e. either <code>HaverMetaData</code> or <code>HaverData</code>.
+</p>
+
+
+<h3>Assigning Aliases</h3>
+
+<p>User-defined codes are stored in field &lsquo;alias&rsquo;.
+Since the original Haver codes remain in field &lsquo;code&rsquo;, any mapping from an original Haver code to a user-defined alias is recorded in the object.
+</p>
+<p>In order to define your own codes, you have to supply a mapping of original Haver series codes to the codes that you want to use.
+You do so through the method <code>haver.setalias</code> and its arguments <code>codes</code> (the original Haver series codes) and <code>aliases</code> (the codes that you want to use).
+The two character vectors must be of the same length.
+Elements of argument <code>aliases</code> must not exist in field <code>code</code>.
+For example, if this field contains a code &lsquo;yr&rsquo;, you cannot use this string as an alias for any of the codes in the object.
+</p>
+<p><code>codes</code> may contain codes that are not in the <code>HaverMetaData</code> or <code>HaverData</code> object, and vice versa.
+Among other things, this means that you can assign your own codes to any subset of the codes of the object.
+A requirement that always applies is that the mapping you supply must be 1:1, i.e. you may not assign an original Haver series code to two different user-defined codes, and you may not assign the same user-defined code to two different Haver codes.
+</p>
+<p>You may set aliases of series codes incrementally.
+For example, you can issue a statement that assigns aliases for the first three codes, then issue a statement that assigns aliases for some other codes, etc.
+Each renaming operation requires, however, that the mapping supplied in <code>codes</code> and <code>aliases</code> is consistent with the mapping that already exists in the object.
+As an immediate consequence, you cannot assign an alias to a series code that already has a different alias assigned.
+If you want to do this, you have to clear all user-defined codes first using the <code>clear=TRUE</code> argument.
+You may wish to save the mapping that exists in the object before you do that.
+You can do this easily by accessing the &lsquo;code&rsquo; and &lsquo;alias&rsquo; fields of the object using double bracket indexing.
+</p>
+<p>Haver series codes in <code>HaverMetaData</code> objects are always recorded in lower case.
+Any codes that you specify in <code>aliases</code> will also be converted to lower case.
+This may result in mappings that are not allowed.
+For example, the mapping from <code>codes=c("code1","code2")</code> to<br />
+<code>aliases=c("mycode","myCode")</code> will not work since it is not a 1:1 mapping anymore once the elements in <code>aliases</code> are translated to lower case.
+</p>
+<p><code>haver.setalias</code> does not modify the <code>HaverMetaData</code> object in place but rather returns a modified object.
+Only statements that have some sort of an assignment like<br />
+<code>&gt; hmd &lt;- haver.setalias(hmd, codes, aliases)</code><br />
+make sense.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="Haver_package.html">Haver_package</a></code><br />
+<code><a href="haver_data.html">haver.data</a></code><br />
+<code><a href="haver_metadata.html">haver.metadata</a></code><br />
+<code><a href="HaverData.html">HaverData</a></code><br />
+<code><a href="HaverMetaData.html">HaverMetaData</a></code><br />
+<code><a href="HaverErrorReport.html">HaverErrorReport</a></code><br />
+<code><a href="haver_codelists.html">haver.codelists</a></code><br />
+<code><a href="haver_datamd.html">haver.datamd</a></code><br />
+<code><a href="haver_limits.html">haver.limits</a></code><br />
+<code><a href="Haver_advanced.html">Haver_advanced</a></code><br />
+<code><a href="Haver_legacy.html">Haver_legacy</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+haver.path()
+haver.path("examples")
+
+## We set up an example data set consisting of three series:
+ex_t1 &lt;- as.Date("2010-10-31", format="%Y-%m-%d")
+hd &lt;- haver.data(c("haverd:fxtwb", "havermqa:gdph", "havermqa:c")
+                 , aggmode="relaxed", start=ex_t1)
+haver.datamd(hd)
+
+## We assign aliases for the first two codes:
+ex_codes   &lt;- c("fxtwb", "gdph")
+ex_aliases &lt;- c("fx"   , "y"   )
+hd  &lt;- haver.setalias(hd, codes=ex_codes, aliases=ex_aliases)
+hmd &lt;- haver.datamd(hd)
+print(hmd, fields=c("code", "alias", "descriptor"))
+
+## We add an alias for the third code:
+hd  &lt;- haver.setalias(hd, codes="c", aliases="pce")
+
+## The aliases are used when coercing the object to another type:
+as.matrix(hd)
+
+haver.path("restore")
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>

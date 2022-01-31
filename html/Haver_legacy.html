@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Haver Legacy Functions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for Haver_legacy {Haver}"><tr><td>Haver_legacy {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Haver Legacy Functions</h2>
+
+<h3>Description</h3>
+
+<p>This document describes legacy functions to access Haver Analytics time series databases from R.
+It also compares the the legacy functions to the recommended <code>haver</code> familiy of functions.
+Loading the current Haver package includes the superseded legacy functions.
+Use of the functions described here should only be made if existing R scripts depend on them.
+In all other cases, we recommend using a new set of functions (see section &lsquo;Old and New Haver Functions&rsquo; in <code><a href="Haver_package.html">Haver_package</a></code>).
+</p>
+
+
+<h3>Details</h3>
+
+<p>This section gives an overview of the legacy <code>dlx</code> family of functions.
+</p>
+<p>One or more time series are queried using <code>dlxGetData</code> and are returned as <code>zoo</code> objects indexed by Date objects.
+Metadata for one series is queried using <code>dlxGetInfo</code>.
+In order to use these functions you must first set the location of your Haver databases using <code>dlxSetDbPath</code>.
+Some basic examples are provided below:
+</p>
+<pre>
+## Load Haver library
+library(Haver)
+
+## Set the location of your Haver databases.
+dlxSetDbPath("C:/DLX/data/")
+
+## Get the series LANAGRA and GDP from database USECON.
+dlxGetData(c("lanagra", "gdp"), "usecon")
+
+## Get the series LANAGRA and GDP from database USECON and
+## FFED from database WEEKLY
+dlxGetData(c("lanagra", "gdp", "weekly:ffed"), "usecon")
+
+## Get the series LANAGRA from database USECON in the date range
+## 2000:1 to 2010:12
+dlxGetData("lanagra", "usecon", start="2000-01-01", end="2010-12-31")
+
+## Get the series LANAGRA from database USECON, convert to quarterly
+## frequency, and get data in the range 2000:1 to 2010:4
+dlxGetData("lanagra", "usecon", start="2000-01-01", end="2010-12-31", 
+  frequency="q")
+
+## Get metadata about series LANAGRA in database USECON
+dlxGetInfo("lanagra", "usecon")
+</pre>
+<p>You can also set the aggregation mode that will be used in calls to <code>dlxGetData</code> by using function <code>dlxSetAggregation</code>. 
+Options are &quot;strict&quot;, &quot;relaxed&quot;, and &quot;force&quot;.
+See <code>?dlxSetAggregation</code> for details.
+To see the current aggregation mode, call <code>dlxGetAggregation</code>.
+The default is &quot;strict&quot;.<br />
+<br />
+More examples are provided in the help files of the individual <code>dlx</code> functions (see the table below for hyperlinks).
+</p>
+
+
+<h3>Changes in the Legacy <code>dlx</code> Familiy of Functions</h3>
+
+<p>Compared to the previous version of the <span class="pkg">Haver</span> package, the only changes made are:
+</p>
+
+<ul>
+<li><p> While the return type of data queries is still <code>zoo</code>, the <span class="pkg">zoo</span> package is no longer automatically installed with the <span class="pkg">Haver</span> package.
+If you do not have <span class="pkg">zoo</span> installed and want to use the legacy dlx family of functions, you have to install it yourself (see <code><a href="../../utils/html/install.packages.html">install.packages</a></code>).
+</p>
+</li>
+<li><p> Some of the help files have been reworked slightly.
+</p>
+</li>
+<li><p> Path settings will be preserved from one R session to the next.
+</p>
+</li></ul>
+
+
+
+<h3>Differences to the New Functions and Interactions between Old and New Functions</h3>
+
+<p>This section highlights the most important differences between the legacy <code>dlx</code> family of functions and the 
+recommended <code>haver</code> family of functions.
+The following table gives a quick overview of old and new function names:
+</p>
+
+<table summary="Rd table">
+<tr>
+ <td style="text-align: left;">
+<b>legacy <code>dlx</code> family</b> </td><td style="text-align: left;"> <b>corresponding <code>haver</code> family function</b> </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+<code><a href="dlxSetDbPath.html">dlxSetDbPath</a></code>             </td><td style="text-align: left;"> <code><a href="haver_path.html">haver.path</a></code>               </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+<code><a href="dlxGetInfo.html">dlxGetInfo</a></code>               </td><td style="text-align: left;"> <code><a href="haver_metadata.html">haver.metadata</a></code>           </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+<code><a href="dlxGetData.html">dlxGetData</a></code>               </td><td style="text-align: left;"> <code><a href="haver_data.html">haver.data</a></code>               </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+<code><a href="dlxSetAggregation.html">dlxSetAggregation</a></code>        </td><td style="text-align: left;">                                        </td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+<code><a href="dlxGetAggregation.html">dlxGetAggregation</a></code>        </td><td style="text-align: left;">                                        
+</td>
+</tr>
+
+</table>
+
+<p>The functionality of <code>dlxSetAggregation</code> is now incorporated in <code>haver.data</code>.
+</p>
+
+
+<h4>Path Setting</h4>
+
+<p><code>dlxSetDbPath</code> has been replaced by <code>haver.path</code>.
+Both functions store the database path in a global variable &lsquo;.dlxdbpath&rsquo;.
+This means that setting the path using <code>dlxSetDbPath</code> will be relevant for the recommended <code>haver</code> family of functions.
+Conversely, setting the path using <code>haver.path</code> will also provide the setting for the legacy <code>dlx</code> family of functions.
+</p>
+<p>Regardless of which function you use, path settings will be preserved from one R session to the next.
+</p>
+
+
+
+<h4>Name Changes</h4>
+
+<p>The <code>varnames</code> argument of <code>dlxGetData</code> has been renamed into <code>codes</code> for <code>haver.data</code>.
+The casing of metadata fields returned by <code>dlxGetData</code> has been changed to be strictly lower case in <code>haver.metadata</code>.
+The metadata field &lsquo;varname&rsquo; of <code>dlxGetData</code> has been renamed to &lsquo;code&rsquo; in <code>haver.metadata</code>.
+</p>
+
+
+
+<h4>Metadata</h4>
+
+<p><code>dlxGetInfo</code> only lets you query metadata for one code at a time.
+<code>haver.metadata</code> lets you specify lists of codes, or lets you retrieve metadata for an entire database.
+In addition, <code>haver.metadata</code> returns the information in a more convenient fashion, namely as a <code>data.frame</code> or as a <code>HaverMetaData</code> object.
+Both can be filtered, and <code>data.frame</code>s from different metadata queries can be appended using <code><a href="../../base/html/cbind.html">rbind</a></code>.
+The resulting objects can be passed to <code>haver.data</code> for data queries.
+</p>
+
+
+
+<h4>Data Queries</h4>
+
+
+
+<h5>Return Types</h5>
+
+<p><code>haver.data</code> does not by default return a <code>zoo</code> object.
+Instead, it returns a <code>HaverData</code> object.
+If you want <code>haver.data</code> to give you <code>zoo</code> objects, you can either set the value of the argument <code>rtype</code> to <code>zoo</code>, or you can have it return a <code>HaverData</code> object first and then coerce it to a <code>zoo</code> object using <code><a href="HaverData.html">haver.as.zoo</a></code>.
+</p>
+<p><code>HaverData</code> objects can also be coerced into a matrix or a <code>data.frame</code>.
+</p>
+
+
+
+<h5>Metadata Associated with Data Queries</h5>
+
+<p>For each data query, <code>haver.data</code> automatically retrieves the metadata associated with the series retrieved, as long as you use the default return type <code>HaverData</code>.
+You can access the metadata of the <code>HaverData</code> object simply by using <code>haver.datamd(hd)</code> which, among other things, gives you a listing of the series descriptors.
+</p>
+
+
+
+<h5>Data Set Frequency</h5>
+
+<p>The <code>frequency</code> argument of <code>dlxGetData</code> only applied if no series in the query was recorded in a lower frequency.
+By contrast, the <code>frequency</code> argument of <code>haver.data</code> always pins down the frequency of the returned data set.
+If series cannot be aggregated or disaggregated to fit this frequency they get removed from the query.
+</p>
+
+
+
+<h5>Other</h5>
+
+<p>With <code>haver.data</code>, you can feed objects created by <code>haver.metatdata</code> into the data query.
+</p>
+<p>The time display has also improved.
+With <code>haver.data</code>, you can choose between period display and end-of-period date display.
+</p>
+
+
+
+
+<h4>Aggregation Mode</h4>
+
+<p>The recommended <code>haver</code> family of functions has no direct counterparts to <code>dlxSetAggregation</code> and <code>dlxGetAggregation</code>.
+The aggregation mode is instead determined by the <code>aggmode</code> argument of <code><a href="haver_data.html">haver.data</a></code>.
+If this argument is not supplied, <code>aggmode</code> always defaults to &lsquo;strict&rsquo;.
+This is independent of what you set using <code>dlxSetAggregation</code>.
+</p>
+<p>The behavior of <code>dlxGetData</code> is different:
+Here settings invoked by <code>dlxSetAggregation</code> really determine under which aggregation mode data are queried.
+</p>
+<p>For a description of aggregation modes, see <code><a href="haver_data.html">haver.data</a></code>.
+</p>
+
+
+
+<h4>Using Aliases for Haver Series Codes</h4>
+
+<p>In <code>dlxGetData</code>, you can supply an argument <code>.colnames</code> that renames Haver series to names of your liking.
+<code><a href="haver_data.html">haver.data</a></code> does not have a corresponding argument.
+Instead, the renaming feature has been expanded for <code><a href="HaverMetaData.html">HaverMetaData</a></code> and <code><a href="HaverData.html">HaverData</a></code> objects.
+You can incrementally apply Haver code aliases of your liking, and you can reset names to the original Haver codes.
+The mapping of original Haver series codes and your aliases is always stored in the objects and can be extracted at any time.
+</p>
+
+
+
+<h4>Starting and Ending Dates of Queries</h4>
+
+<p>In <code>dlxGetdata</code>, arguments &lsquo;start&rsquo; and &lsquo;end&rsquo; could be supplied as different objects (character strings, <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> Date objects, <code>chron</code> objects, etc.). In <code>haver.data</code>, these arguments must be R Date objects.
+</p>
+
+
+
+<h3>Author(s)</h3>
+
+<p>Haver Analytics &lt;tech@haver.com&gt;
+</p>
+<p>Maintainer: Haver Analytics &lt;tech@haver.com&gt;
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="Haver_package.html">Haver_package</a></code><br />
+<code><a href="haver_path.html">haver.path</a></code><br />
+<code><a href="haver_data.html">haver.data</a></code><br />
+<code><a href="haver_metadata.html">haver.metadata</a></code><br />
+<code><a href="HaverData.html">HaverData</a></code><br />
+<code><a href="HaverMetaData.html">HaverMetaData</a></code><br />
+<code><a href="HaverErrorReport.html">HaverErrorReport</a></code><br />
+<code><a href="haver_codelists.html">haver.codelists</a></code><br />
+<code><a href="haver_datamd.html">haver.datamd</a></code><br />
+<code><a href="haver_setalias.html">haver.setalias</a></code><br />
+<code><a href="haver_limits.html">haver.limits</a></code><br />
+<code><a href="Haver_advanced.html">Haver_advanced</a></code><br />
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>

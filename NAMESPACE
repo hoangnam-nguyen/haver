@@ -1,0 +1,41 @@
+## C code
+useDynLib(Haver)
+
+## namespace imports
+## importFrom(stats, ts, as.ts, plot.ts, print.ts)
+## importFrom(stats, ts, as.ts)
+import(stats)
+
+## functions visible to the user
+export(dlxSetDbPath,
+       dlxGetInfo,
+       dlxGetAggregation,
+       dlxSetAggregation,
+       dlxGetData,
+       haver.path,
+       haver.limits,
+       haver.hasfullcodes,
+       haver.metadata,
+       haver.data,
+       haver.as.zoo,
+       haver.codelists,
+       haver.datamd,
+       haver.setalias)
+
+## methods visible to the user
+S3method(print          , HaverMetaData)
+S3method(dim            , HaverMetaData)
+S3method("dim<-"        , HaverMetaData)
+S3method("["            , HaverMetaData)
+S3method("[["           , HaverMetaData)
+S3method("[<-"          , HaverMetaData)
+S3method("[[<-"         , HaverMetaData)
+S3method(as.data.frame  , HaverMetaData)
+S3method(print          , HaverData)
+S3method("dim<-"        , HaverData)
+S3method("[<-"          , HaverData)
+S3method(as.matrix      , HaverData)
+S3method(as.data.frame  , HaverData)
+S3method(as.ts          , HaverData)
+S3method(print          , HaverErrorReport)
+

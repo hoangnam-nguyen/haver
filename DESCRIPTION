@@ -1,0 +1,16 @@
+Package: Haver
+Type: Package
+Title: Access Haver Analytics Databases from R
+Version: 2.4
+Date: 2018-08-24
+Author: Haver Analytics <tech@haver.com>
+Maintainer: Haver Analytics <tech@haver.com>
+Description: Provides access to Haver Analytics databases from R
+License: Provided under DLX Subscription Agreement according to the
+        Agreement Definition of MATTER
+LazyLoad: no
+LazyData: no
+Depends: R (>= 3.0.2)
+Imports: stats
+Suggests: zoo
+Built: R 4.0.0; x86_64-w64-mingw32; 2020-05-11 18:37:11 UTC; windows

@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Set and Query the Path to Haver Databases</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for haver.path {Haver}"><tr><td>haver.path {Haver}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>
+Set and Query the Path to Haver Databases
+</h2>
+
+<h3>Description</h3>
+
+<p><code>haver.path</code> sets and queries the path to Haver databases.
+A correct path setting is a prerequisite for data and metadata queries run by <code><a href="haver_data.html">haver.data</a></code> and <code><a href="haver_metadata.html">haver.metadata</a></code>
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+haver.path()
+haver.path(set)
+haver.path("auto")
+haver.path("examples")
+haver.path("restore")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>set</code></td>
+<td>
+
+<p>a character string specifying the directory where Haver databases reside.
+&lsquo;set&rsquo; can also be set to one of the strings &lsquo;auto&rsquo;, &lsquo;examples&rsquo;, and &lsquo;restore&rsquo;, in which case the database path is automatically set to an appropriate directory.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>If <code>haver.path</code> is called without arguments, the current setting is returned.
+</p>
+<p>If <code>set="auto"</code>, <code>haver.path</code> tries to set the proper path to Haver databases automatically.
+In some instances this may not work, depending on the <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> configuration and the DLX configuration of your machine.
+</p>
+<p>Alternatively, you can set the database path manually.
+In this case you should supply the full (absolute) path of the directory where the Haver databases reside as the value for the <code>set</code> argument.
+If you supply a relative file path it is taken to be relative to the working directory.
+Since this is unlikely to be what you meant, a warning is issued.
+</p>
+<p><code>haver.path("examples")</code> will set the database directory to the directory where the example databases of the <span class="pkg">Haver</span> package are located.
+Before doing so, <code>haver.path</code> will store the existing setting.
+You can re-enable this setting by issuing <code>haver.path("restore")</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>When argument <code>set</code> is not supplied, a character string that holds the current setting of the database path, and <code>NULL</code> otherwise.
+</p>
+
+
+<h3><span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> Startup, Loading of Package</h3>
+
+<p>When <span class="pkg">Haver</span> gets attached to the <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> search path, it first tries to restore the database path setting from the last session.
+If this is not successful, it tries to detect the correct setting from the DLX setup of your machine.
+If neither of these attempts are successful, you have to set the database path manually.
+</p>
+
+
+<h3>Setting the Database Path Manually</h3>
+
+<p>Note that when manually setting the database path, you must supply directory separators using &lsquo;\\&rsquo; or &lsquo;/&rsquo;.
+The function will fail if directories are separated by a single &lsquo;\&rsquo;.
+</p>
+<p>If the supplied database path does not exist, an error occurs.
+If the supplied database path does not contain any Haver Analytics databases, a warning is issued.
+</p>
+
+
+<h3>Running &lsquo;Examples&rsquo; Sections of Help Entries of the <span class="pkg">Haver</span> Package</h3>
+
+<p>At the top of the examples section in each help entry the database path is set to point to the example databases:<br />
+<code>&gt; haver.path("examples")</code>.<br />
+At the end of each examples section, the previous setting is restored:<br />
+<code>&gt; haver.path("restore")</code>.
+</p>
+<p>If you re-set the Haver database path manually after issuing <code>haver.path("examples")</code>, a call to <code>haver.path("restore")</code> will not change this setting anymore.
+</p>
+<p>If you quit <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> or unload <span class="pkg">Haver</span> before restoring the setting to the actual Haver Analytics databases, <span class="pkg">Haver</span> will still set the path to the actual Haver Analytics databases when <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> is invoked (i.e. when <span class="pkg">Haver</span> is attached).
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="Haver_package.html">Haver_package</a></code><br />
+<code><a href="haver_data.html">haver.data</a></code><br />
+<code><a href="haver_metadata.html">haver.metadata</a></code><br />
+<code><a href="HaverData.html">HaverData</a></code><br />
+<code><a href="HaverMetaData.html">HaverMetaData</a></code><br />
+<code><a href="HaverErrorReport.html">HaverErrorReport</a></code><br />
+<code><a href="haver_codelists.html">haver.codelists</a></code><br />
+<code><a href="haver_datamd.html">haver.datamd</a></code><br />
+<code><a href="haver_setalias.html">haver.setalias</a></code><br />
+<code><a href="haver_limits.html">haver.limits</a></code><br />
+<code><a href="Haver_advanced.html">Haver_advanced</a></code><br />
+<code><a href="Haver_legacy.html">Haver_legacy</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## query the current setting
+ex_origpath &lt;- haver.path()
+
+## let 'haver.path' try to determine the correct setting automatically
+haver.path("auto")
+
+## set to examples databases
+haver.path("examples")
+
+## restore previous setting
+haver.path("restore")
+
+## manually restore to setting before running examples section
+if (!is.null(ex_origpath)) haver.path(ex_origpath)
+
+## Not run: 
+## manually set the database path to an explicitly given directory
+haver.path("c:/dlx/data")
+
+## End(Not run)
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>Haver</em> version 2.4 <a href="00Index.html">Index</a>]</div>
+</body></html>
